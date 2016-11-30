@@ -2,9 +2,9 @@
 -- Company: 
 -- Engineer: 
 -- 
--- Create Date:    17:33:42 11/26/2016 
+-- Create Date:    19:07:03 11/26/2016 
 -- Design Name: 
--- Module Name:    Top_level - Behavioral 
+-- Module Name:    mux2 - Behavioral 
 -- Project Name: 
 -- Target Devices: 
 -- Tool versions: 
@@ -29,15 +29,30 @@ use IEEE.STD_LOGIC_1164.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity Top_level is
 
+----------------------------------------------------------
+------           		  Rt(0) or Rd(1)              -------
+----------------------------------------------------------
 
-end Top_level;
+entity mux1 is
 
-architecture Behavioral of Top_level is
+	PORT 
+	(
+		rt 				: IN	STD_LOGIC(4 DOWNTO 0);
+		rd 				: IN	STD_LOGIC(4 DOWNTO 0);
+		sel		 		: IN	STD_LOGIC;
+		out_reg 			: OUT	STD_LOGIC(4 DOWNTO 0)		
+	 );
+	 
+end mux1;
+
+architecture Behavioral of mux1 is
 
 begin
 
+WITH sel SELECT
+	out_reg <= rt WHEN 0,
+				  rd WHEN 1;
 
 end Behavioral;
 
