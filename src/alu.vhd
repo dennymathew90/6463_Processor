@@ -52,7 +52,8 @@ entity alu is
 		a 				: IN STD_LOGIC(31 DOWNTO 0);
 		b 				: IN STD_LOGIC(31 DOWNTO 0);
 		op_select 	: IN STD_LOGIC(3 DOWNTO 0);
-		output 		: OUT STD_LOGIC(31 DOWNTO 0)		
+		output 		: OUT STD_LOGIC(31 DOWNTO 0);
+		zero_out 	: OUT STD_LOGIC
 	 );
 
 end alu;
@@ -213,6 +214,27 @@ begin
 				WHEN "11111" =>
 				  output <= a(30 downto 0) & a(31); 
 			END CASE;
+		-- branch if less than
+		ELSIF (op_select = "1000") THEN
+			IF(a < b) THEN
+				zero_out <= '1';
+			ELSE
+				zero_out <= '0';
+			END IF;
+		-- branch if equal
+		ELSIF (op_select = "1001") THEN
+			IF(a = b) THEN
+				zero_out <= '1';
+			ELSE
+				zero_out <= '0';
+			END IF;
+	   -- branch if not equal
+		ELSIF (op_select = "1010") THEN
+			IF(a = b) THEN
+				zero_out <= '0';
+			ELSE
+				zero_out <= '1';
+			END IF;	
 		END IF;
 		
 	END PROCESS;

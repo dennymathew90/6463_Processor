@@ -186,6 +186,10 @@ begin
 			gpr_mem(0) WHEN  OTHERS;
 	
 	-- write back data
-	gpr_mem(CONV_INTEGER(r_des)) <= data_wb;
-	
+	PROCESS(reg_write_h)
+	BEGIN
+		IF(reg_write_h = '1') THEN
+			gpr_mem(CONV_INTEGER(r_des)) <= data_wb; 
+		END IF;
+	END PROCESS;
 end behavioral;
