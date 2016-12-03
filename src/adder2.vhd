@@ -41,6 +41,7 @@ architecture Behavioral of adder2 is
 
 begin
 
+output <= imm_val + added_pc;
 
 end Behavioral;
 
