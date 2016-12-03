@@ -38,10 +38,10 @@ entity mux1 is
 
 	PORT 
 	(
-		rt 				: IN	STD_LOGIC(4 DOWNTO 0);
-		rd 				: IN	STD_LOGIC(4 DOWNTO 0);
+		rt 				: IN	STD_LOGIC_VECTOR(4 DOWNTO 0);
+		rd 				: IN	STD_LOGIC_VECTOR(4 DOWNTO 0);
 		sel		 		: IN	STD_LOGIC;
-		out_reg 			: OUT	STD_LOGIC(4 DOWNTO 0)		
+		out_reg 			: OUT	STD_LOGIC_VECTOR(4 DOWNTO 0)		
 	 );
 	 
 end mux1;

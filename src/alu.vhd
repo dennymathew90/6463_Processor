@@ -67,9 +67,11 @@ begin
 				 
 	PROCESS(op_select)
 	BEGIN 
+		-- add
 		IF (op_select = "0000") THEN
 			output <= a + b;
 			zero_out <= '0';
+		-- sub	
 		ELSIF (op_select = "0001") THEN
 			output <= a - b;
 			zero_out <= '0';
