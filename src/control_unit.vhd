@@ -29,16 +29,58 @@ use IEEE.STD_LOGIC_1164.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
+package constant_pkg is	
+	constant OPC_ADD_SUB_AND_OR_NOR   : std_logic_vector(1 downto 0):= x"00";
+	constant OPC_ADDI   	: std_logic_vector(1 downto 0):= x"01";
+	constant OPC_SUB   	: std_logic_vector(1 downto 0):= x"00";
+	constant OPC_SUBI   	: std_logic_vector(1 downto 0):= x"02";
+	constant OPC_AND   	: std_logic_vector(1 downto 0):= x"00";
+	constant OPC_ANDI   	: std_logic_vector(1 downto 0):= x"03";
+	constant OPC_OR   	: std_logic_vector(1 downto 0):= x"00";
+	constant OPC_NOR   	: std_logic_vector(1 downto 0):= x"00";
+	constant OPC_ORI   	: std_logic_vector(1 downto 0):= x"04";
+	constant OPC_SHL   	: std_logic_vector(1 downto 0):= x"05";
+	constant OPC_SHR   	: std_logic_vector(1 downto 0):= x"06";
+	
+	constant OPC_LW   	: std_logic_vector(1 downto 0):= x"07";
+	constant OPC_SW   	: std_logic_vector(1 downto 0):= x"08";
+	constant OPC_BLT   	: std_logic_vector(1 downto 0):= x"09";
+	constant OPC_BEQ   	: std_logic_vector(1 downto 0):= x"0A";
+	constant OPC_BNE   	: std_logic_vector(1 downto 0):= x"0B";
+	constant OPC_JMP   	: std_logic_vector(1 downto 0):= x"0C";
+	constant OPC_HAL   	: std_logic_vector(1 downto 0):= x"3F";
+	
+	constant FUNC_ADD   	: std_logic_vector(1 downto 0):= x"10";
+	constant FUNC_SUB   	: std_logic_vector(1 downto 0):= x"11";
+	constant FUNC_AND   	: std_logic_vector(1 downto 0):= x"12";
+	constant FUNC_OR  	: std_logic_vector(1 downto 0):= x"13";
+	constant FUNC_NOR  	: std_logic_vector(1 downto 0):= x"14";
+		
+	constant ENABLE   	: std_logic := '1';
+	constant DISABLE   	: std_logic := '0';
+	
+	constant ALU_ADD		: std_logic_vector(2 downto 0):= x"010";
+	constant ALU_SUB		: std_logic_vector(2 downto 0):= x"110";
+	constant ALU_AND		: std_logic_vector(2 downto 0):= x"000";
+	constant ALU_OR		: std_logic_vector(2 downto 0):= x"001";
+	constant ALU_NOR		: std_logic_vector(2 downto 0):= x"111";
+end constant_pkg;
+
+ -- reusable counter design counter.vhd library pkgs;
+use pkgs.par_pkg.all;
+
 entity control_unit is
 	PORT 
 	(
-		clr, clk		: IN STD_LOGIC;
+		clr, clk			: IN STD_LOGIC;
 		opcode			: IN STD_LOGIC_VECTOR(5 DOWNTO 0);	
+		func				: IN STD_LOGIC_VECTOR(5 DOWNTO 0);	
 		c_jump			: OUT STD_LOGIC;
+		c_regdst			: OUT STD_LOGIC;
 		c_branch			: OUT STD_LOGIC;
 		c_memtoreg		: OUT STD_LOGIC;
 		c_memread		: OUT STD_LOGIC;
-		c_aluop			: OUT STD_LOGIC;
+		c_aluop			: OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
 		c_memwrite		: OUT STD_LOGIC;
 		c_alusrc			: OUT STD_LOGIC;
 		c_regwrite		: OUT STD_LOGIC			
@@ -49,7 +91,57 @@ end control_unit;
 architecture Behavioral of control_unit is
 
 begin
-
+	
+	--state processing : button logic
+	PROCESS(opcode, clr)
+	BEGIN
+		IF(clr='1') THEN
+			-- TODO Find a way to init all the outputs of the control unit
+			NULL;
+			
+		ELSE			
+			c_jump			<= DISABLE;
+			c_branch			<= DISABLE;
+			c_memtoreg		<= DISABLE;
+			c_memread		<= DISABLE;
+			c_aluop			<= DISABLE;
+			c_memwrite		<= DISABLE;
+			c_alusrc			<= DISABLE;
+			c_regwrite		<= DISABLE;
+			CASE opcode IS
+				WHEN OPC_ADD_SUB_AND_OR_NOR =>  
+					c_regwrite	<= ENABLE;
+					c_regdst		<= ENABLE;
+					if (func = FUNC_ADD) THEN
+						c_alu_op	<= ALU_ADD;
+					ELSIF (func = FUNC_SUB) THEN
+						c_alu_op	<= ALU_SUB;
+					ELSIF (func = FUNC_AND) THEN
+						c_alu_op	<= ALU_AND;
+					ELSIF (func = FUNC_OR) THEN
+						c_alu_op	<= ALU_OR;
+					ELSIF (func = FUNC_NOR) THEN
+						c_alu_op	<= ALU_NOR;
+					END IF;
+--				WHEN OPC_ADDI =>	
+--				WHEN OPC_SUBI =>	 
+--				WHEN OPC_ANDI =>	
+--				WHEN OPC_ORI =>	
+--				WHEN OPC_SHL =>	
+--				WHEN OPC_SHR =>	
+--				WHEN OPC_LW =>		
+--				WHEN OPC_SW =>		
+--				WHEN OPC_BLT =>	
+--				WHEN OPC_BEQ =>	
+--				WHEN OPC_BNE =>	
+--				WHEN OPC_JMP =>	
+--				WHEN OPC_HAL =>	
+					
+			END CASE;
+		END IF;
+		
+	END PROCESS;
+			
 
 end Behavioral;
 
