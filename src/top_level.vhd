@@ -29,16 +29,16 @@ use IEEE.STD_LOGIC_1164.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity Top_level is
+entity top_level is
 
 PORT 
 	(
 		clr, clk		: IN STD_LOGIC
 	 );
 	 
-end Top_level;
+end top_level;
 
-architecture Behavioral of Top_level is
+architecture Behavioral of top_level is
 component alu
     port(
          a 				: IN STD_LOGIC(31 DOWNTO 0);
