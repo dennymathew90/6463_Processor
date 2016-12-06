@@ -45,6 +45,9 @@ use IEEE.STD_LOGIC_1164.ALL;
 ------            0110	- shr		         			-------
 ----------------------------------------------------------
 
+ -- reusable counter design counter.vhd library pkgs;
+use pkgs.constant_pkg.all;
+
 entity alu is
 
 	PORT 
@@ -65,27 +68,27 @@ SIGNAL temp : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS=> '0');
 
 begin
 				 
-	PROCESS(op_select)
+	PROCESS(a, b)
 	BEGIN 
 		-- add
-		IF (op_select = "0000") THEN
+		IF (op_select = ALU_ADD) THEN
 			output <= a + b;
 			zero_out <= '0';
 		-- sub	
-		ELSIF (op_select = "0001") THEN
+		ELSIF (op_select = ALU_SUB) THEN
 			output <= a - b;
 			zero_out <= '0';
-		ELSIF (op_select = "0010") THEN
+		ELSIF (op_select = ALU_AND) THEN
 			output <= a and b;
 			zero_out <= '0';
-		ELSIF (op_select = "0011") THEN
+		ELSIF (op_select = ALU_OR) THEN
 			output <= a or b;
 			zero_out <= '0';
-		ELSIF (op_select = "0100") THEN
+		ELSIF (op_select = ALU_NOR) THEN
 			output <= a nor b;
 			zero_out <= '0';
 		-- shift left
-		ELSIF (op_select = "0101") THEN
+		ELSIF (op_select = ALU_SHL) THEN
 			zero_out <= '0';
 			CASE b(4 DOWNTO 0) IS
 				WHEN "00000" =>
@@ -157,7 +160,7 @@ begin
 			END CASE;
 			
 		-- shift right
-		ELSIF (op_select = "0110") THEN
+		ELSIF (op_select = ALU_SHR) THEN
 			zero_out <= '0';
 			CASE b(4 DOWNTO 0) IS
 				WHEN "00000" =>
@@ -228,21 +231,21 @@ begin
 				  output <= "00000000000000000000000000000000";
 			END CASE;
 		-- branch if less than
-		ELSIF (op_select = "0111") THEN
+		ELSIF (op_select = ALU_BLT) THEN
 			IF(a < b) THEN
 				zero_out <= '1';
 			ELSE
 				zero_out <= '0';
 			END IF;
 		-- branch if equal
-		ELSIF (op_select = "1000") THEN
+		ELSIF (op_select = ALU_BE) THEN
 			IF(a = b) THEN
 				zero_out <= '1';
 			ELSE
 				zero_out <= '0';
 			END IF;
 	   -- branch if not equal
-		ELSIF (op_select = "1001") THEN
+		ELSIF (op_select = ALU_BLT) THEN
 			IF(a = b) THEN
 				zero_out <= '0';
 			ELSE

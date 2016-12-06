@@ -59,15 +59,21 @@ package constant_pkg is
 	constant ENABLE   	: std_logic := '1';
 	constant DISABLE   	: std_logic := '0';
 	
-	constant ALU_ADD		: std_logic_vector(2 downto 0):= x"010";
-	constant ALU_SUB		: std_logic_vector(2 downto 0):= x"110";
-	constant ALU_AND		: std_logic_vector(2 downto 0):= x"000";
-	constant ALU_OR		: std_logic_vector(2 downto 0):= x"001";
-	constant ALU_NOR		: std_logic_vector(2 downto 0):= x"111";
+	constant ALU_ADD		: std_logic_vector(3 downto 0):= x"0000";
+	constant ALU_SUB		: std_logic_vector(3 downto 0):= x"0001";
+	constant ALU_AND		: std_logic_vector(3 downto 0):= x"0010";
+	constant ALU_OR		: std_logic_vector(3 downto 0):= x"0011";
+	constant ALU_NOR		: std_logic_vector(3 downto 0):= x"0100";
+	constant ALU_SHL		: std_logic_vector(3 downto 0):= x"0101";
+	constant ALU_SHR		: std_logic_vector(3 downto 0):= x"0110";
+	constant ALU_BLT		: std_logic_vector(3 downto 0):= x"0111";
+	constant ALU_BE		: std_logic_vector(3 downto 0):= x"1000";
+	constant ALU_BNE		: std_logic_vector(3 downto 0):= x"1001";
+		
 end constant_pkg;
 
  -- reusable counter design counter.vhd library pkgs;
-use pkgs.par_pkg.all;
+use pkgs.constant_pkg.all;
 
 entity control_unit is
 	PORT 
@@ -112,6 +118,7 @@ begin
 				WHEN OPC_ADD_SUB_AND_OR_NOR =>  
 					c_regwrite	<= ENABLE;
 					c_regdst		<= ENABLE;
+					
 					if (func = FUNC_ADD) THEN
 						c_alu_op	<= ALU_ADD;
 					ELSIF (func = FUNC_SUB) THEN
@@ -123,18 +130,58 @@ begin
 					ELSIF (func = FUNC_NOR) THEN
 						c_alu_op	<= ALU_NOR;
 					END IF;
---				WHEN OPC_ADDI =>	
---				WHEN OPC_SUBI =>	 
---				WHEN OPC_ANDI =>	
---				WHEN OPC_ORI =>	
---				WHEN OPC_SHL =>	
---				WHEN OPC_SHR =>	
---				WHEN OPC_LW =>		
---				WHEN OPC_SW =>		
---				WHEN OPC_BLT =>	
---				WHEN OPC_BEQ =>	
---				WHEN OPC_BNE =>	
---				WHEN OPC_JMP =>	
+				WHEN OPC_ADDI =>	
+					c_regwrite	<= ENABLE;
+					c_alusrc		<= ENABLE;
+					c_alu_op		<= ALU_ADD;
+					
+				WHEN OPC_SUBI =>	
+					c_regwrite	<= ENABLE;
+					c_alusrc		<= ENABLE;
+					c_alu_op		<= ALU_SUB;
+					
+				WHEN OPC_ANDI =>	
+					c_regwrite	<= ENABLE;
+					c_alusrc		<= ENABLE;
+					c_alu_op		<= ALU_ANDI;
+					
+					
+				WHEN OPC_ORI =>
+					c_regwrite	<= ENABLE;
+					c_alusrc		<= ENABLE;
+					c_alu_op		<= ALU_ORI;
+					
+					
+				WHEN OPC_SHL =>	
+					c_regwrite	<= ENABLE;
+					c_alusrc		<= ENABLE;
+					c_alu_op		<= ALU_SHL;
+					
+				WHEN OPC_SHR =>
+					c_regwrite	<= ENABLE;
+					c_alusrc		<= ENABLE;
+					c_alu_op		<= ALU_SHR;
+					
+				WHEN OPC_LW =>	
+					c_regwrite	<= ENABLE;
+					c_alusrc		<= ENABLE;
+					c_alu_op		<= ALU_ADD;
+					c_memread	<= ENABLE;
+					c_memtoreg	<= ENABLE;
+				WHEN OPC_SW =>					
+					c_alusrc		<= ENABLE;
+					c_alu_op		<= ALU_ADD;
+					c_memwrite	<= ENABLE;
+					
+				WHEN OPC_BLT =>	
+					c_alu_op		<= ALU_BLT;
+					
+				WHEN OPC_BEQ =>
+					c_alu_op		<= ALU_BEQ;
+				WHEN OPC_BNE =>
+					c_alu_op		<= ALU_BNE;
+				WHEN OPC_JMP =>
+					c_jump		<= ENABLE;
 --				WHEN OPC_HAL =>	
 					
 			END CASE;
