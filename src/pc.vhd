@@ -2,9 +2,9 @@
 -- Company: 
 -- Engineer: 
 -- 
--- Create Date:    00:35:41 12/02/2016 
+-- Create Date:    18:06:40 11/27/2016 
 -- Design Name: 
--- Module Name:    mux4 - Behavioral 
+-- Module Name:    pc - Behavioral 
 -- Project Name: 
 -- Target Devices: 
 -- Tool versions: 
@@ -29,23 +29,35 @@ use IEEE.STD_LOGIC_1164.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity mux4 is
-    Port ( 
-			  sel 				: in 		STD_LOGIC;	
-			  adder2_result 	: in  	STD_LOGIC_VECTOR (31 downto 0);
-           added_pc 			: in  	STD_LOGIC_VECTOR (31 downto 0);
-           output 			: out  	STD_LOGIC_VECTOR (31 downto 0)
-			 );
-end mux4;
+entity pc is
+	PORT 
+	(
+		clr, clk		: IN STD_LOGIC;
+		nextaddr		: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+		pc_addr		: OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
+	 );
+end pc;
 
-architecture Behavioral of mux4 is
+architecture Behavioral of pc is	
+		
+	SIGNAL pc_addr_tmp : STD_LOGIC_VECTOR(31 DOWNTO 0) := x"00000000";
+	
+	begin
 
-begin
+	----------------------------------------------------------
+	------           Out  Registers                    -------
+	----------------------------------------------------------
 
-WITH sel SELECT
+	-- pc_addr register
+	PROCESS(clr, clk)  BEGIN
+		IF(clr='1') THEN
+			pc_addr <= (OTHERS => '0');
+		ELSIF(clk'EVENT AND clk = '1') THEN  
+			pc_addr <= pc_addr_tmp;
+		END IF;
+	END PROCESS;
 
-	output <= adder2_result WHEN '1',
-				 added_pc WHEN '0';
+	pc_addr_tmp <= nextaddr;
 
 end Behavioral;
 

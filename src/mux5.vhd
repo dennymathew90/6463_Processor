@@ -2,9 +2,9 @@
 -- Company: 
 -- Engineer: 
 -- 
--- Create Date:    00:35:41 12/02/2016 
+-- Create Date:    00:00:10 12/05/2016 
 -- Design Name: 
--- Module Name:    mux4 - Behavioral 
+-- Module Name:    mux5 - Behavioral 
 -- Project Name: 
 -- Target Devices: 
 -- Tool versions: 
@@ -29,23 +29,23 @@ use IEEE.STD_LOGIC_1164.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity mux4 is
+entity mux5 is
     Port ( 
-			  sel 				: in 		STD_LOGIC;	
-			  adder2_result 	: in  	STD_LOGIC_VECTOR (31 downto 0);
-           added_pc 			: in  	STD_LOGIC_VECTOR (31 downto 0);
-           output 			: out  	STD_LOGIC_VECTOR (31 downto 0)
+			  mux4_out : in  STD_LOGIC_VECTOR (31 downto 0);
+			  jmp_addr : in  STD_LOGIC_VECTOR (31 downto 0);  
+           sel : in  STD_LOGIC;
+           output : out  STD_LOGIC_VECTOR (31 downto 0)
 			 );
-end mux4;
+end mux5;
 
-architecture Behavioral of mux4 is
+architecture Behavioral of mux5 is
 
 begin
 
 WITH sel SELECT
 
-	output <= adder2_result WHEN '1',
-				 added_pc WHEN '0';
+	output <= mux4_out WHEN '1',
+				 jmp_addr WHEN '0';
 
 end Behavioral;
 

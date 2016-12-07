@@ -29,16 +29,16 @@ use IEEE.STD_LOGIC_1164.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity Top_level is
+entity top_level is
 
 PORT 
 	(
 		clr, clk		: IN STD_LOGIC
 	 );
 	 
-end Top_level;
+end top_level;
 
-architecture Behavioral of Top_level is
+architecture Behavioral of top_level is
 component alu
     port(
          a 				: IN STD_LOGIC(31 DOWNTO 0);
@@ -101,14 +101,6 @@ component pc
         );
 end component;
 
-
-component add
-	port(
-		add_a 				: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-		add_b 				: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-		output		 		: OUT STD_LOGIC_VECTOR(31 DOWNTO 0)		
-	 );
-end component;
 --All the signals are declared here,which are not a part of the top module.
 --These are temporary signals.
 
@@ -218,11 +210,6 @@ PC : pc port map (
 			pc_addr		=>	pc_addr_t
         );
 		  
-ADD : add port map (			
-			add_a 		=>	pc_addr_t,
-			add_b 		=>	add_4_t,
-			output		=>	nextaddr_t		
-        );
 		  
 end Behavioral;
 

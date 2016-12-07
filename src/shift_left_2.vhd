@@ -2,9 +2,9 @@
 -- Company: 
 -- Engineer: 
 -- 
--- Create Date:    14:11:43 12/01/2016 
+-- Create Date:    23:00:50 12/05/2016 
 -- Design Name: 
--- Module Name:    adder - Behavioral 
+-- Module Name:    shift_left_2 - Behavioral 
 -- Project Name: 
 -- Target Devices: 
 -- Tool versions: 
@@ -29,16 +29,18 @@ use IEEE.STD_LOGIC_1164.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity adder is
-    Port ( in_addr : in  STD_LOGIC_VECTOR (31 downto 0);
-           out_addr : in  STD_LOGIC_VECTOR (31 downto 0));
-end adder;
+entity shift_left_2 is
+    Port ( 
+			  instr : in  STD_LOGIC_VECTOR (25 downto 0);
+           output : out  STD_LOGIC_VECTOR (27 downto 0)
+			 );
+end shift_left_2;
 
-architecture Behavioral of adder is
+architecture Behavioral of shift_left_2 is
 
 begin
 
-out_addr <= in_addr + "100";
+output <= instr & "00";
 
 end Behavioral;
 
