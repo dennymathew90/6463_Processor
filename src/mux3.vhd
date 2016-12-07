@@ -47,11 +47,9 @@ architecture Behavioral of mux3 is
 begin
 
 WITH sel SELECT
-	out_data <= alu_result WHEN 0,
-					read_data  WHEN 1;
 
-
-
+	out_data <= alu_result WHEN '0',
+					read_data  WHEN '1';
 
 end Behavioral;
 

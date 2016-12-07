@@ -51,8 +51,8 @@ architecture Behavioral of mux1 is
 begin
 
 WITH sel SELECT
-	out_reg <= rt WHEN 0,
-				  rd WHEN 1;
+	out_reg <= rt WHEN '0',
+				  rd WHEN '1';
 
 end Behavioral;
 

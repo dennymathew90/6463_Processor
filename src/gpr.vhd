@@ -32,15 +32,15 @@ use IEEE.NUMERIC_STD.ALL;
 entity gpr is
 	PORT 
 	(
-	   clk			: IN STD_LOGIC;
+	   clk,clr		: IN STD_LOGIC;
 		rs 			: IN STD_LOGIC_VECTOR(4 DOWNTO 0);
 		rt 			: IN STD_LOGIC_VECTOR(4 DOWNTO 0);
 		r_des			: IN STD_LOGIC_VECTOR(4 DOWNTO 0);
 		data_wb		: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
 		reg_write_h	: IN STD_LOGIC;		
 		data_r1		: OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-		temp 			: OUT STD_LOGIC;
-		data_r2		: OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
+		data_r2		: OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+		data_r3		: OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
 	 );
 	 
 end gpr;
@@ -55,19 +55,17 @@ begin
 
 	data_r1 <= gpr_mem(CONV_INTEGER(rs));
 	data_r2 <= gpr_mem(CONV_INTEGER(rt));
-
+	data_r3 <= gpr_mem(CONV_INTEGER(r_des));
 	reg_write_temp <= reg_write_h;
 	-- write back data
 	PROCESS(clk)
 	BEGIN
 		IF (rising_edge(clk)) THEN
 			IF(reg_write_temp = '1') THEN
-				temp <= '1';
 				gpr_mem(CONV_INTEGER(r_des)) <= data_wb;
 			END IF;
 		END IF;
 	END PROCESS;
 	
 
---	
 end behavioral;

@@ -40,7 +40,7 @@ end pc;
 
 architecture Behavioral of pc is	
 		
-	SIGNAL pc_addr_tmp : STD_LOGIC(31 DOWNTO 0) := x"00000000";
+	SIGNAL pc_addr_tmp : STD_LOGIC_VECTOR(31 DOWNTO 0) := x"00000000";
 	
 	begin
 

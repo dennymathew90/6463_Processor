@@ -19,10 +19,10 @@
 ----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-
+use IEEE.STD_LOGIC_unsigned.ALL;
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
+use IEEE.NUMERIC_STD.ALL;
 
 -- Uncomment the following library declaration if instantiating
 -- any Xilinx primitives in this code.
@@ -41,13 +41,8 @@ end data_mem;
 
 architecture Behavioral of data_mem is
 
-	CONSTANT DATA_BITS : Integer := 8;			-- no of bits per word
+	CONSTANT DATA_BITS : Integer := 32;			-- no of bits per word
 	CONSTANT DEPTH     : Integer := 2056;	
-	
-	SIGNAL read_data_8a	: STD_LOGIC_VECTOR(7 DOWNTO 0);
-	SIGNAL read_data_8b	: STD_LOGIC_VECTOR(7 DOWNTO 0);
-	SIGNAL read_data_8c	: STD_LOGIC_VECTOR(7 DOWNTO 0);
-	SIGNAL read_data_8d	: STD_LOGIC_VECTOR(7 DOWNTO 0);
 	
 	SUBTYPE word_t  IS STD_LOGIC_VECTOR(DATA_BITS - 1 DOWNTO 0);
 	TYPE    ram_t   IS ARRAY(0 TO DEPTH - 1) OF word_t;
@@ -57,21 +52,15 @@ architecture Behavioral of data_mem is
 	
 begin
 
-	PROCESS(mem_write, mem_read)
+	PROCESS(mem_write)
 	BEGIN
-		-- writes data to memory (store)
-		IF(mem_write = '1' and mem_read='0') THEN
-			data_ram(CONV_INTEGER(address)) <=  write_data(31 DOWNTO 24);
-			data_ram(CONV_INTEGER(address)+1) <= write_data(23 DOWNTO 16);
-			data_ram(CONV_INTEGER(address)+2) <= write_data(15 DOWNTO 8);
-			data_ram(CONV_INTEGER(address)+3) <= write_data(7 DOWNTO 0);
+--		-- writes data to memory (store)
+		IF(mem_write = '1') THEN
+			data_ram(CONV_INTEGER(address)) <=  write_data;
 			
-		-- reads data from memory (load)	
-		ELSIF(mem_write = '0' and mem_read='1') THEN
-			read_data_8a <= data_ram(CONV_INTEGER(address));
-			read_data_8b <= data_ram(CONV_INTEGER(address)+1);
-			read_data_8c <= data_ram(CONV_INTEGER(address)+2);
-			read_data_8d <= data_ram(CONV_INTEGER(address)+3);
+--		reads data from memory (load)	
+		ELSIF(mem_write = '0') THEN
+			read_data <= data_ram(CONV_INTEGER(address));
 		ELSE
 			-- do nothing
 		END IF;
