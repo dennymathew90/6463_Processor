@@ -39,60 +39,141 @@ PORT
 end top_level;
 
 architecture Behavioral of top_level is
-component alu
-    port(
-         a 				: IN STD_LOGIC(31 DOWNTO 0);
-			b 				: IN STD_LOGIC(31 DOWNTO 0);
-			op_select 	: IN STD_LOGIC(3 DOWNTO 0);
-			output 		: OUT STD_LOGIC(31 DOWNTO 0)		
-        );
-end component;
+COMPONENT alu
+	PORT(
+		a : IN std_logic_vector(31 downto 0);
+		b : IN std_logic_vector(31 downto 0);
+		op_select : IN std_logic_vector(3 downto 0);          
+		output : OUT std_logic_vector(31 downto 0);
+		zero_out : OUT std_logic
+		);
+	END COMPONENT;
 
-component control_unit
-    port(
-         clr, clk			: IN STD_LOGIC;
-			opcode			: IN STD_LOGIC_VECTOR(5 DOWNTO 0);	
-			func				: IN STD_LOGIC_VECTOR(5 DOWNTO 0);	
-			c_jump			: OUT STD_LOGIC;
-			c_regdst			: OUT STD_LOGIC;
-			c_branch			: OUT STD_LOGIC;
-			c_memtoreg		: OUT STD_LOGIC;
-			c_memread		: OUT STD_LOGIC;
-			c_aluop			: OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
-			c_memwrite		: OUT STD_LOGIC;
-			c_alusrc			: OUT STD_LOGIC;
-			c_regwrite		: OUT STD_LOGIC			
-        );
-end component;
+COMPONENT control_unit
+PORT(
+		clr : IN std_logic;
+		clk : IN std_logic;
+		opcode : IN std_logic_vector(5 downto 0);
+		func : IN std_logic_vector(5 downto 0);          
+		c_jump : OUT std_logic;
+		c_regdst : OUT std_logic;
+		c_branch : OUT std_logic;
+		c_memtoreg : OUT std_logic;
+		c_memread : OUT std_logic;
+		c_alu_op : OUT std_logic_vector(3 downto 0);
+		c_memwrite : OUT std_logic;
+		c_alusrc : OUT std_logic;
+		c_regwrite : OUT std_logic
+		);
+	END COMPONENT;
 
-component gpr
-    port(
-         rs 			: IN STD_LOGIC_VECTOR(4 DOWNTO 0);
-			rt 			: IN STD_LOGIC_VECTOR(4 DOWNTO 0);
-			r_des			: IN STD_LOGIC_VECTOR(4 DOWNTO 0);
-			data_wb		: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-			reg_write_h	: IN STD_LOGIC;		
-			data_r1		: OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-			data_r2		: OUT STD_LOGIC_VECTOR(31 DOWNTO 0)		
-        );
-end component;
+COMPONENT gpr
+	PORT(
+		clk : IN std_logic;
+		clr : IN std_logic;
+		rs : IN std_logic_vector(4 downto 0);
+		rt : IN std_logic_vector(4 downto 0);
+		r_des : IN std_logic_vector(4 downto 0);
+		data_wb : IN std_logic_vector(31 downto 0);
+		reg_write_h : IN std_logic;          
+		data_r1 : OUT std_logic_vector(31 downto 0);
+		data_r2 : OUT std_logic_vector(31 downto 0);
+		data_r3 : OUT std_logic_vector(31 downto 0)
+		);
+	END COMPONENT;
 
-component instr_mem
-    port(
-         read_addr	: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-			instr_32		: OUT STD_LOGIC_VECTOR(31 DOWNTO 0)	
-        );
-end component;
+COMPONENT mux2
+	PORT(
+		rt : IN std_logic_vector(31 downto 0);
+		imm : IN std_logic_vector(31 downto 0);
+		sel : IN std_logic;          
+		output : OUT std_logic_vector(31 downto 0)
+		);
+	END COMPONENT;
 
-component mux2
-    port(
-         rt 				: IN STD_LOGIC(4 DOWNTO 0);
-			rd 				: IN STD_LOGIC(4 DOWNTO 0);
-			r_select 		: IN STD_LOGIC;
-			out_reg 			: OUT STD_LOGIC(4 DOWNTO 0)		
-        );
-end component;
+COMPONENT mux1
+	PORT(
+		rt : IN std_logic_vector(4 downto 0);
+		rd : IN std_logic_vector(4 downto 0);
+		sel : IN std_logic;          
+		out_reg : OUT std_logic_vector(4 downto 0)
+		);
+	END COMPONENT;
 
+COMPONENT mux3
+	PORT(
+		sel : IN std_logic;
+		alu_result : IN std_logic_vector(31 downto 0);
+		read_data : IN std_logic_vector(31 downto 0);          
+		out_data : OUT std_logic_vector(31 downto 0)
+		);
+	END COMPONENT;
+	
+COMPONENT mux4
+	PORT(
+		sel : IN std_logic;
+		adder2_result : IN std_logic_vector(31 downto 0);
+		added_pc : IN std_logic_vector(31 downto 0);          
+		output : OUT std_logic_vector(31 downto 0)
+		);
+	END COMPONENT;
+	
+COMPONENT mux5
+	PORT(
+		mux4_out : IN std_logic_vector(31 downto 0);
+		jmp_addr : IN std_logic_vector(31 downto 0);
+		sel : IN std_logic;          
+		output : OUT std_logic_vector(31 downto 0)
+		);
+	END COMPONENT;
+	
+COMPONENT data_mem
+	PORT(
+		mem_write : IN std_logic;
+		mem_read : IN std_logic;
+		address : IN std_logic_vector(31 downto 0);
+		write_data : IN std_logic_vector(31 downto 0);          
+		read_data : OUT std_logic_vector(31 downto 0)
+		);
+	END COMPONENT;
+
+COMPONENT shift_left_2
+	PORT(
+		instr : IN std_logic_vector(25 downto 0);          
+		output : OUT std_logic_vector(27 downto 0)
+		);
+	END COMPONENT;
+	
+COMPONENT adder1
+	PORT(
+		in_addr : IN std_logic_vector(31 downto 0);          
+		out_addr : OUT std_logic_vector(31 downto 0)
+		);
+	END COMPONENT;
+	
+COMPONENT adder2
+	PORT(
+		imm_val : IN std_logic_vector(31 downto 0);
+		added_pc : IN std_logic_vector(31 downto 0);          
+		output : OUT std_logic_vector(31 downto 0)
+		);
+	END COMPONENT;
+
+COMPONENT and_gate
+	PORT(
+		branch : IN std_logic;
+		zero : IN std_logic;          
+		output : OUT std_logic
+		);
+	END COMPONENT;
+	
+COMPONENT sign_extd
+	PORT(
+		imm_val : IN std_logic_vector(15 downto 0);          
+		sign_extd_val : OUT std_logic_vector(31 downto 0)
+		);
+	END COMPONENT;
+	
 component pc
     port(
          clr, clk		: IN STD_LOGIC;
@@ -155,54 +236,134 @@ signal	output_t	 		: STD_LOGIC_VECTOR(31 DOWNTO 0);
 begin
 
 --instantiate and do port map for the ALU.
-ALU : alu port map (
-			 a => data_r1_t,
-			 b => data_r2_t,
-			 op_select => c_aluop_t,
-			 output => data_wb_t
-        );
+Inst_alu: alu PORT MAP(
+		a => ,
+		b => ,
+		op_select => ,
+		output => ,
+		zero_out => 
+	);
 
 --instantiate and do port map for the Control Unit.
-CU : control_unit port map (
-			 clr				=> clr,
-			 clk				=> clk,
-          opcode 			=> instr_32_t(31 downto 26),
-			 func 			=> instr_32_t(5 downto 0),				
-			 --c_jump 			=> 				
-			 c_regdst 		=> c_regdst_t,				
-			 --c_branch 		=> 				
-			 --c_memtoreg 	=> 			
-			 --c_memread 		=> 			
-			 c_aluop	 		=> c_aluop_t,			
-			 --c_memwrite 	=> 			
-			 --c_alusrc	 	=> 			
-			 c_regwrite 	=> c_regwrite_t				 
-        );
+Inst_control_unit: control_unit PORT MAP(
+		clr => ,
+		clk => ,
+		opcode => ,
+		func => ,
+		c_jump => ,
+		c_regdst => ,
+		c_branch => ,
+		c_memtoreg => ,
+		c_memread => ,
+		c_alu_op => ,
+		c_memwrite => ,
+		c_alusrc => ,
+		c_regwrite => 
+	);
 		  
 --instantiate and do port map for the gpr.
-GPR : gpr port map (
-			rs 			=>	instr_32_t(25 downto 21),	
-			rt 			=>	instr_32_t(20 downto 16),	
-			r_des			=>	out_reg_t,
-			data_wb		=>	data_wb_t,	
-			reg_write_h	=> c_regwrite_t,
-			data_r1		=>	data_r1_t,
-			data_r2		=>	data_r2_t			
-        );
+Inst_gpr: gpr PORT MAP(
+		clk => ,
+		clr => ,
+		rs => ,
+		rt => ,
+		r_des => ,
+		data_wb => ,
+		reg_write_h => ,
+		data_r1 => ,
+		data_r2 => ,
+		data_r3 => 
+	);
+
+
+
 
 --instantiate and do port map for the instr_mem.
 INSTR_MEM : instr_mem port map (			
 			read_addr	=>	pc_addr_t,
 			instr_32		=>	instr_32_t			
         );
+
+--instantiate and do port map for MUX2		
+Inst_mux2: mux2 PORT MAP(
+		rt => ,
+		imm => ,
+		sel => ,
+		output => 
+	);
+		 
+--instantiate and do port map for MUX1
+Inst_mux1: mux1 PORT MAP(
+		rt => ,
+		rd => ,
+		sel => ,
+		out_reg => 
+	);		
+
+--instantiate and do port map for MUX3
+Inst_mux3: mux3 PORT MAP(
+		sel => ,
+		alu_result => ,
+		read_data => ,
+		out_data => 
+	);
+--instantiate and do port map for MUX4
+Inst_mux4: mux4 PORT MAP(
+		sel => ,
+		adder2_result => ,
+		added_pc => ,
+		output => 
+	);
 	
-MUX2 : mux2 port map (			
-			rt 			=>	instr_32_t(20 downto 16),
-			rd				=>	instr_32_t(15 downto 11),
-			r_select		=>	c_regdst_t,
-			out_reg		=>	out_reg_t
-        );
-		  
+--instantiate and do port map for MUX5
+Inst_mux5: mux5 PORT MAP(
+		mux4_out => ,
+		jmp_addr => ,
+		sel => ,
+		output => 
+	);
+	
+--instantiate and do port map for data memory
+Inst_data_mem: data_mem PORT MAP(
+		mem_write => ,
+		mem_read => ,
+		address => ,
+		write_data => ,
+		read_data => 
+	);
+
+--instantiate and do port map for shift left
+Inst_shift_left_2: shift_left_2 PORT MAP(
+		instr => ,
+		output => 
+	);
+	
+--instantiate and do port map for adder1
+Inst_adder1: adder1 PORT MAP(
+		in_addr => ,
+		out_addr => 
+	);
+
+--instantiate and do port map for adder2	
+Inst_adder2: adder2 PORT MAP(
+		imm_val => ,
+		added_pc => ,
+		output => 
+	);
+--instantiate and do port map for and gate	
+Inst_and_gate: and_gate PORT MAP(
+		branch => ,
+		zero => ,
+		output => 
+	);
+	
+--instantiate and do port map for sign extender	
+Inst_sign_extd: sign_extd PORT MAP(
+		imm_val => ,
+		sign_extd_val => 
+	);
+
+--instantiate and do port map for Program Counter		
 PC : pc port map (			
 			clr			=>	clr, 
 			clk			=>	clk,

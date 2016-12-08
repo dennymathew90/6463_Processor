@@ -19,6 +19,7 @@
 ----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.STD_LOGIC_unsigned.ALL;
 
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
@@ -45,17 +46,18 @@ use IEEE.STD_LOGIC_1164.ALL;
 ------            0110	- shr		         			-------
 ----------------------------------------------------------
 
+library work;
  -- reusable counter design counter.vhd library pkgs;
-use pkgs.constant_pkg.all;
+use work.constants_pkg.all;
 
 entity alu is
 
 	PORT 
 	(
-		a 				: IN STD_LOGIC(31 DOWNTO 0);
-		b 				: IN STD_LOGIC(31 DOWNTO 0);
-		op_select 	: IN STD_LOGIC(3 DOWNTO 0);
-		output 		: OUT STD_LOGIC(31 DOWNTO 0);
+		a 				: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+		b 				: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+		op_select 	: IN STD_LOGIC_VECTOR(3 DOWNTO 0);
+		output 		: OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
 		zero_out 	: OUT STD_LOGIC
 	 );
 
@@ -70,6 +72,8 @@ begin
 				 
 	PROCESS(a, b)
 	BEGIN 
+		output <= x"FFFFFFFF";
+		zero_out <= '0';			--TODO check these values
 		-- add
 		IF (op_select = ALU_ADD) THEN
 			output <= a + b;

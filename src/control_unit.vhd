@@ -29,51 +29,10 @@ use IEEE.STD_LOGIC_1164.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-package constant_pkg is	
-	constant OPC_ADD_SUB_AND_OR_NOR   : std_logic_vector(1 downto 0):= x"00";
-	constant OPC_ADDI   	: std_logic_vector(1 downto 0):= x"01";
-	constant OPC_SUB   	: std_logic_vector(1 downto 0):= x"00";
-	constant OPC_SUBI   	: std_logic_vector(1 downto 0):= x"02";
-	constant OPC_AND   	: std_logic_vector(1 downto 0):= x"00";
-	constant OPC_ANDI   	: std_logic_vector(1 downto 0):= x"03";
-	constant OPC_OR   	: std_logic_vector(1 downto 0):= x"00";
-	constant OPC_NOR   	: std_logic_vector(1 downto 0):= x"00";
-	constant OPC_ORI   	: std_logic_vector(1 downto 0):= x"04";
-	constant OPC_SHL   	: std_logic_vector(1 downto 0):= x"05";
-	constant OPC_SHR   	: std_logic_vector(1 downto 0):= x"06";
-	
-	constant OPC_LW   	: std_logic_vector(1 downto 0):= x"07";
-	constant OPC_SW   	: std_logic_vector(1 downto 0):= x"08";
-	constant OPC_BLT   	: std_logic_vector(1 downto 0):= x"09";
-	constant OPC_BEQ   	: std_logic_vector(1 downto 0):= x"0A";
-	constant OPC_BNE   	: std_logic_vector(1 downto 0):= x"0B";
-	constant OPC_JMP   	: std_logic_vector(1 downto 0):= x"0C";
-	constant OPC_HAL   	: std_logic_vector(1 downto 0):= x"3F";
-	
-	constant FUNC_ADD   	: std_logic_vector(1 downto 0):= x"10";
-	constant FUNC_SUB   	: std_logic_vector(1 downto 0):= x"11";
-	constant FUNC_AND   	: std_logic_vector(1 downto 0):= x"12";
-	constant FUNC_OR  	: std_logic_vector(1 downto 0):= x"13";
-	constant FUNC_NOR  	: std_logic_vector(1 downto 0):= x"14";
-		
-	constant ENABLE   	: std_logic := '1';
-	constant DISABLE   	: std_logic := '0';
-	
-	constant ALU_ADD		: std_logic_vector(3 downto 0):= x"0000";
-	constant ALU_SUB		: std_logic_vector(3 downto 0):= x"0001";
-	constant ALU_AND		: std_logic_vector(3 downto 0):= x"0010";
-	constant ALU_OR		: std_logic_vector(3 downto 0):= x"0011";
-	constant ALU_NOR		: std_logic_vector(3 downto 0):= x"0100";
-	constant ALU_SHL		: std_logic_vector(3 downto 0):= x"0101";
-	constant ALU_SHR		: std_logic_vector(3 downto 0):= x"0110";
-	constant ALU_BLT		: std_logic_vector(3 downto 0):= x"0111";
-	constant ALU_BE		: std_logic_vector(3 downto 0):= x"1000";
-	constant ALU_BNE		: std_logic_vector(3 downto 0):= x"1001";
-		
-end constant_pkg;
 
+library work;
  -- reusable counter design counter.vhd library pkgs;
-use pkgs.constant_pkg.all;
+use work.constants_pkg.all;
 
 entity control_unit is
 	PORT 
@@ -86,7 +45,7 @@ entity control_unit is
 		c_branch			: OUT STD_LOGIC;
 		c_memtoreg		: OUT STD_LOGIC;
 		c_memread		: OUT STD_LOGIC;
-		c_aluop			: OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+		c_alu_op			: OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
 		c_memwrite		: OUT STD_LOGIC;
 		c_alusrc			: OUT STD_LOGIC;
 		c_regwrite		: OUT STD_LOGIC			
@@ -106,84 +65,98 @@ begin
 			NULL;
 			
 		ELSE			
+			c_regdst			<= DISABLE;	
 			c_jump			<= DISABLE;
 			c_branch			<= DISABLE;
 			c_memtoreg		<= DISABLE;
 			c_memread		<= DISABLE;
-			c_aluop			<= DISABLE;
+			c_alu_op			<= ALU_NDEF;
 			c_memwrite		<= DISABLE;
 			c_alusrc			<= DISABLE;
 			c_regwrite		<= DISABLE;
 			CASE opcode IS
-				WHEN OPC_ADD_SUB_AND_OR_NOR =>  
+				WHEN OPC_ADD_SUB_AND_OR_NOR(5 downto 0) =>  
 					c_regwrite	<= ENABLE;
 					c_regdst		<= ENABLE;
 					
-					if (func = FUNC_ADD) THEN
+					if (func = FUNC_ADD(5 downto 0)) THEN
 						c_alu_op	<= ALU_ADD;
-					ELSIF (func = FUNC_SUB) THEN
+					ELSIF (func = FUNC_SUB(5 downto 0)) THEN
 						c_alu_op	<= ALU_SUB;
-					ELSIF (func = FUNC_AND) THEN
+					ELSIF (func = FUNC_AND(5 downto 0)) THEN
 						c_alu_op	<= ALU_AND;
-					ELSIF (func = FUNC_OR) THEN
+					ELSIF (func = FUNC_OR(5 downto 0)) THEN
 						c_alu_op	<= ALU_OR;
-					ELSIF (func = FUNC_NOR) THEN
+					ELSIF (func = FUNC_NOR(5 downto 0)) THEN
 						c_alu_op	<= ALU_NOR;
 					END IF;
-				WHEN OPC_ADDI =>	
+				WHEN OPC_ADDI(5 downto 0) =>	
 					c_regwrite	<= ENABLE;
 					c_alusrc		<= ENABLE;
+--					c_regdst		<= DISABLE;
 					c_alu_op		<= ALU_ADD;
 					
-				WHEN OPC_SUBI =>	
+				WHEN OPC_SUBI(5 downto 0) =>	
 					c_regwrite	<= ENABLE;
 					c_alusrc		<= ENABLE;
+--					c_regdst		<= DISABLE;
 					c_alu_op		<= ALU_SUB;
 					
-				WHEN OPC_ANDI =>	
+				WHEN OPC_ANDI(5 downto 0) =>	
 					c_regwrite	<= ENABLE;
 					c_alusrc		<= ENABLE;
-					c_alu_op		<= ALU_ANDI;
+					c_alu_op		<= ALU_AND;
+--					c_regdst		<= DISABLE;					
 					
-					
-				WHEN OPC_ORI =>
+				WHEN OPC_ORI(5 downto 0) =>
 					c_regwrite	<= ENABLE;
 					c_alusrc		<= ENABLE;
-					c_alu_op		<= ALU_ORI;
+					c_alu_op		<= ALU_OR;
+--					c_regdst		<= DISABLE;					
 					
-					
-				WHEN OPC_SHL =>	
+				WHEN OPC_SHL(5 downto 0) =>	
 					c_regwrite	<= ENABLE;
 					c_alusrc		<= ENABLE;
 					c_alu_op		<= ALU_SHL;
+--					c_regdst		<= DISABLE;	
 					
-				WHEN OPC_SHR =>
+				WHEN OPC_SHR(5 downto 0) =>
 					c_regwrite	<= ENABLE;
 					c_alusrc		<= ENABLE;
 					c_alu_op		<= ALU_SHR;
+--					c_regdst		<= DISABLE;	
 					
-				WHEN OPC_LW =>	
+				WHEN OPC_LW(5 downto 0) =>	
 					c_regwrite	<= ENABLE;
 					c_alusrc		<= ENABLE;
 					c_alu_op		<= ALU_ADD;
 					c_memread	<= ENABLE;
 					c_memtoreg	<= ENABLE;
-				WHEN OPC_SW =>					
+--					c_regdst		<= DISABLE;	
+					
+				WHEN OPC_SW(5 downto 0) =>					
 					c_alusrc		<= ENABLE;
 					c_alu_op		<= ALU_ADD;
 					c_memwrite	<= ENABLE;
+--					c_regdst		<= DISABLE;	
 					
-				WHEN OPC_BLT =>	
+				WHEN OPC_BLT(5 downto 0) =>	
 					c_alu_op		<= ALU_BLT;
-					
-				WHEN OPC_BEQ =>
-					c_alu_op		<= ALU_BEQ;
-				WHEN OPC_BNE =>
+					c_branch		<= ENABLE;
+				WHEN OPC_BE(5 downto 0) =>
+					c_alu_op		<= ALU_BE;
+					c_branch		<= ENABLE;
+				WHEN OPC_BNE(5 downto 0) =>
 					c_alu_op		<= ALU_BNE;
-				WHEN OPC_JMP =>
+					c_branch		<= ENABLE;
+				WHEN OPC_JMP(5 downto 0) =>
 					c_jump		<= ENABLE;
---				WHEN OPC_HAL =>	
-					
+					c_branch		<= ENABLE;
+					c_alu_op 	<= ALU_NDEF;
+				WHEN OPC_HAL(5 downto 0) =>	
+					null;	-- TODO
+				WHEN OTHERS =>
+					c_alu_op <= ALU_NDEF; -- TODO
 			END CASE;
 		END IF;
 		
