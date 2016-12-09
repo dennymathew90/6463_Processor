@@ -31,6 +31,7 @@ use IEEE.NUMERIC_STD.ALL;
 
 entity data_mem is
     Port ( 
+			  d_clk					: IN	STD_LOGIC;
 			  mem_write  			: IN  STD_LOGIC;  
 			  mem_read 				: IN  STD_LOGIC;
            address 				: IN  STD_LOGIC_VECTOR (31 DOWNTO 0);
@@ -42,29 +43,32 @@ end data_mem;
 architecture Behavioral of data_mem is
 
 	CONSTANT DATA_BITS : Integer := 32;			-- no of bits per word
-	CONSTANT DEPTH     : Integer := 2056;	
+	CONSTANT DEPTH     : Integer := 2;		
 	
-	SUBTYPE word_t  IS STD_LOGIC_VECTOR(DATA_BITS - 1 DOWNTO 0);
-	TYPE    ram_t   IS ARRAY(0 TO DEPTH - 1) OF word_t;
+	TYPE    ram_t   IS ARRAY(0 TO DEPTH - 1) OF STD_LOGIC_VECTOR(DATA_BITS - 1 DOWNTO 0);	
 	
 	-- all valus in the array are initialized to 0
 	SIGNAL data_ram : ram_t := ((others=> (others=>'0')));
 	
+	SIGNAL mem_write_t 	:  STD_LOGIC;  
+
+	
 begin
 
-	PROCESS(mem_write)
-	BEGIN
---		-- writes data to memory (store)
-		IF(mem_write = '1') THEN
-			data_ram(CONV_INTEGER(address)) <=  write_data;
-			
---		reads data from memory (load)	
-		ELSIF(mem_write = '0') THEN
-			read_data <= data_ram(CONV_INTEGER(address));
-		ELSE
-			-- do nothing
-		END IF;
-	END PROCESS;
+--	
 	
-end Behavioral;
+process (d_clk)
+  begin
+      if (rising_edge(d_clk)) then
+			
+         if (mem_write_t='1') then
+			   data_ram(to_integer (unsigned(address(31 downto 0)))) <= write_data;
+          end if ;    			
+       end if ;
+end process ;
 
+	read_data <= data_ram(to_integer(unsigned(address(31 downto 0)))) when mem_read = '1';
+	mem_write_t <= mem_write;
+	
+
+end Behavioral;
