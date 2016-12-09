@@ -33,7 +33,13 @@ entity top_level is
 
 PORT 
 	(
-		clr, clk		: IN STD_LOGIC
+		clr, clk		: IN STD_LOGIC;		
+		single_step	: IN	STD_LOGIC;  -- run instruction one by one
+		run_whole	: IN	STD_LOGIC;  -- input is valid
+		show_out		: IN	STD_LOGIC;  -- input is valid			
+		do_rdy		: OUT	STD_LOGIC;   -- output is ready
+		TOP_SSEG_CA 		: out  STD_LOGIC_VECTOR (7 downto 0);
+		TOP_SSEG_AN 		: out  STD_LOGIC_VECTOR (7 downto 0)
 	 );
 	 
 end top_level;
@@ -191,6 +197,17 @@ COMPONENT sign_extd
 		sign_extd_val : OUT std_logic_vector(31 downto 0)
 		);
 	END COMPONENT;
+	
+COMPONENT out_interface
+	PORT(
+		clk : IN std_logic;
+		clr : IN std_logic;
+		alu_result : IN std_logic_vector(31 downto 0);          
+		SSEG_CA : OUT std_logic_vector(7 downto 0);
+		SSEG_AN : OUT std_logic_vector(7 downto 0)
+		);
+	END COMPONENT;
+
 	
 component pc
     port(
@@ -444,6 +461,14 @@ Inst_pc: pc PORT MAP (
 			nextaddr		=>	mux5_to_pc_in,
 			pc_addr		=>	pc_addr_t
    );
-		    
+	
+Inst_out_interface: out_interface PORT MAP(
+		clk => clk,
+		clr => clr,
+		alu_result => alu_out_t,
+		SSEG_CA => TOP_SSEG_CA,
+		SSEG_AN => TOP_SSEG_AN 
+	);
+	
 end Behavioral;
 
