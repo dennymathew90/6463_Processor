@@ -39,6 +39,15 @@ PORT
 end top_level;
 
 architecture Behavioral of top_level is
+
+COMPONENT instr_mem
+	PORT(
+		read_addr : IN std_logic_vector(31 downto 0);          
+		instr : OUT std_logic_vector(31 downto 0)
+		);
+	END COMPONENT;
+	
+	
 COMPONENT alu
 	PORT(
 		a : IN std_logic_vector(31 downto 0);
@@ -77,8 +86,8 @@ COMPONENT gpr
 		data_wb : IN std_logic_vector(31 downto 0);
 		reg_write_h : IN std_logic;          
 		data_r1 : OUT std_logic_vector(31 downto 0);
-		data_r2 : OUT std_logic_vector(31 downto 0);
-		data_r3 : OUT std_logic_vector(31 downto 0)
+		data_r2 : OUT std_logic_vector(31 downto 0)
+--		data_r3 : OUT std_logic_vector(31 downto 0)
 		);
 	END COMPONENT;
 
@@ -137,12 +146,21 @@ COMPONENT data_mem
 		);
 	END COMPONENT;
 
-COMPONENT shift_left_2
+COMPONENT concatenator
 	PORT(
-		instr : IN std_logic_vector(25 downto 0);          
-		output : OUT std_logic_vector(27 downto 0)
+		addr_28 : IN std_logic_vector(25 downto 0);
+		pc_msb : IN std_logic_vector(5 downto 0);          
+		jmp_addr : OUT std_logic_vector(31 downto 0)
 		);
 	END COMPONENT;
+	
+	
+--COMPONENT shift_left_2
+--	PORT(
+--		instr : IN std_logic_vector(25 downto 0);          
+--		output : OUT std_logic_vector(27 downto 0)
+--		);
+--	END COMPONENT;
 	
 COMPONENT adder1
 	PORT(
@@ -185,192 +203,247 @@ end component;
 --All the signals are declared here,which are not a part of the top module.
 --These are temporary signals.
 
-
+-- INSTR MEM
+--signal	read_addr 		:  std_logic_vector(31 downto 0);          
+signal	instr32_t		:  std_logic_vector(31 downto 0);
+		
 --ALU 
-signal 	a_t 				:  STD_LOGIC(31 DOWNTO 0);
-signal 	b_t 				:  STD_LOGIC(31 DOWNTO 0);
-signal	op_select_t 	:  STD_LOGIC(3 DOWNTO 0);
-signal	output_t 		:  STD_LOGIC(31 DOWNTO 0);
+--signal	a_t				:   std_logic_vector(31 downto 0);
+--signal	b_t				:  std_logic_vector(31 downto 0);
+--signal	op_select_t		:  std_logic_vector(3 downto 0);          
+signal	alu_out_t			:  std_logic_vector(31 downto 0);
+--signal	zero_out_t		:  std_logic;
 
 --Control Unit
-signal	opcode_t			:  STD_LOGIC_VECTOR(5 DOWNTO 0);	
-signal	func_t				:  STD_LOGIC_VECTOR(5 DOWNTO 0);	
-signal	c_jump_t			:  STD_LOGIC;
-signal	c_regdst_t			:  STD_LOGIC;
-signal	c_branch_t			:  STD_LOGIC;
-signal	c_memtoreg_t		:  STD_LOGIC;
-signal	c_memread_t		:  STD_LOGIC;
-signal	c_aluop_t			:  STD_LOGIC_VECTOR(2 DOWNTO 0);
-signal	c_memwrite_t		:  STD_LOGIC;
-signal	c_alusrc_t		:  STD_LOGIC;
-signal	c_regwrite_t		:  STD_LOGIC;
+--signal	clr_t		 	:  std_logic;
+--signal	clk_t		 	:  std_logic;
+--signal	opcode_t		:  std_logic_vector(5 downto 0);
+--signal	func_t		:  std_logic_vector(5 downto 0);          
+signal	cu_jump_to_mux5_sel_t		:  std_logic;
+signal	cu_regdst_to_mux1_sel_t	:  std_logic;
+signal	cu_branch_to_and_t	:  std_logic;
+signal	cu_memtoreg_to_mux3_sel_t:  std_logic;
+signal	cu_memread_datamem_readsel_t	:  std_logic;
+signal	cu_opcode_to_alu_t	:  std_logic_vector(3 downto 0);
+signal	cu_memwrite_datamem_writesel_t:  std_logic;
+signal	cu_alusrc_to_mux2_sel_t	:  std_logic;
+signal	cu_regwrite_to_gpr_t:  std_logic;
 
 --gpr
-signal	rs_t 			:  STD_LOGIC_VECTOR(4 DOWNTO 0);
-signal	rt_t 			:  STD_LOGIC_VECTOR(4 DOWNTO 0);
-signal	r_des_t			:  STD_LOGIC_VECTOR(4 DOWNTO 0);
-signal	data_wb_t		:  STD_LOGIC_VECTOR(31 DOWNTO 0);
-signal	reg_write_h_t	:  STD_LOGIC;		
-signal	data_r1_t		:  STD_LOGIC_VECTOR(31 DOWNTO 0);
-signal	data_r2_t		:  STD_LOGIC_VECTOR(31 DOWNTO 0);
+--signal	rs_t				:  std_logic_vector(4 downto 0);
+--signal	rt_t				:  std_logic_vector(4 downto 0);
+--signal	r_des_t			:  std_logic_vector(4 downto 0);
+--signal	data_wb_t		:  std_logic_vector(31 downto 0);
+--signal	reg_write_h_t	:  std_logic;          
+signal	gpr_data1_out		:  std_logic_vector(31 downto 0);
+signal	gpr_data2_out		:  std_logic_vector(31 downto 0);
+--signal	data_r3_t		:  std_logic_vector(31 downto 0);
 
---inst mem
-signal	read_addr_t	:  STD_LOGIC_VECTOR(31 DOWNTO 0);
-signal	instr_32_t		:  STD_LOGIC_VECTOR(31 DOWNTO 0);
+--mux2
+--signal	rt_t		:  std_logic_vector(31 downto 0);
+--signal	imm_t		:  std_logic_vector(31 downto 0);
+--signal	sel_t		:  std_logic;          
+signal	mux2_to_alu_t	:  std_logic_vector(31 downto 0);
 
---mux
-signal	rt_t 				:  STD_LOGIC(4 DOWNTO 0);
-signal	rd_t 				:  STD_LOGIC(4 DOWNTO 0);
-signal	r_select_t 		:  STD_LOGIC;
-signal	out_reg_t 			:  STD_LOGIC(4 DOWNTO 0);
+--mux1
+--signal	rt_t			:  std_logic_vector(4 downto 0);
+--signal	rd_t			:  std_logic_vector(4 downto 0);
+--signal	sel_t			:  std_logic;          
+signal	mux1_to_gpr_t	:  std_logic_vector(4 downto 0);
+	
+--mux3		
+--signal	sel_t				:  std_logic;
+signal	alu_result_t	:  std_logic_vector(31 downto 0);
+signal	read_data_t		:  std_logic_vector(31 downto 0);          
+signal	mux3_to_gpr_t		:  std_logic_vector(31 downto 0);	
 
+--mux4
+--signal	sel_t					:  std_logic;
+signal	adder2_result_t	:  std_logic_vector(31 downto 0);
+signal	added_pc_t			:  std_logic_vector(31 downto 0);          
+signal	mux4_to_mux5				:  std_logic_vector(31 downto 0);
+
+--mux5		
+--signal	mux4_out_t		:  std_logic_vector(31 downto 0);
+--signal	jmp_addr_t		:  std_logic_vector(31 downto 0);
+--signal	sel_t				:  std_logic;          
+signal	jumpaddr_to_mux5_t			:  std_logic_vector(31 downto 0);
+		
+--adder 1			
+--signal	in_addr_t		:  std_logic_vector(31 downto 0);          
+signal	adder1_pc_plus_4out_t		:  std_logic_vector(31 downto 0);		
+
+--adder 2
+--signal	imm_val 	: 	std_logic_vector(31 downto 0);
+--signal	added_pc : 	std_logic_vector(31 downto 0);          
+signal	adder2_to_mux4_t 	:  std_logic_vector(31 downto 0);
+
+--data mem		
+--signal	mem_write_t		:  std_logic;
+--signal	mem_read_t		:  std_logic;
+signal	alu_to_datamem_address_t		:  std_logic_vector(31 downto 0);
+--signal	write_data_t	:  std_logic_vector(31 downto 0);          
+signal	data_mem_to_mux3_t		:  std_logic_vector(31 downto 0);
+	
+
+-- shift left2	
+--signal	instr_t			:  std_logic_vector(25 downto 0);          
+--signal	slt2_out_t			:  std_logic_vector(27 downto 0);
+	
+--and
+--signal	branch_t		:  std_logic;
+signal	alu_zero_to_and_t		:  std_logic;          
+signal	and_to_mux4_sel_t		:  std_logic;
+		
+-- sign extend
+--signal	imm_val_t			:  std_logic_vector(15 downto 0);          
+signal	sign_extd_val_t	:  std_logic_vector(31 downto 0);
+		
 --pc
-signal	nextaddr_t		:  STD_LOGIC_VECTOR(31 DOWNTO 0);
+signal	mux5_to_pc_in		:  STD_LOGIC_VECTOR(31 DOWNTO 0);
 signal	pc_addr_t		:  STD_LOGIC_VECTOR(31 DOWNTO 0);
 
---add			
-signal 	add_a_t			: STD_LOGIC_VECTOR(31 DOWNTO 0);
-signal	add_4_t			: STD_LOGIC_VECTOR(31 DOWNTO 0) := x"00000004";
-signal	output_t	 		: STD_LOGIC_VECTOR(31 DOWNTO 0);			
-		
 begin
 
 --instantiate and do port map for the ALU.
 Inst_alu: alu PORT MAP(
-		a => ,
-		b => ,
-		op_select => ,
-		output => ,
-		zero_out => 
+		a => gpr_data1_out,
+		b => mux2_to_alu_t,
+		op_select => cu_opcode_to_alu_t,
+		output => alu_out_t,
+		zero_out => alu_zero_to_and_t
 	);
 
+	
 --instantiate and do port map for the Control Unit.
 Inst_control_unit: control_unit PORT MAP(
-		clr => ,
-		clk => ,
-		opcode => ,
-		func => ,
-		c_jump => ,
-		c_regdst => ,
-		c_branch => ,
-		c_memtoreg => ,
-		c_memread => ,
-		c_alu_op => ,
-		c_memwrite => ,
-		c_alusrc => ,
-		c_regwrite => 
+		clr => clr,
+		clk => clk,
+		opcode => instr32_t(31 DOWNTO 26) ,
+		func => instr32_t(5 DOWNTO 0),
+		c_jump => cu_jump_to_mux5_sel_t,
+		c_regdst => cu_regdst_to_mux1_sel_t,
+		c_branch => cu_branch_to_and_t,
+		c_memtoreg => cu_memtoreg_to_mux3_sel_t,
+		c_memread => cu_memread_datamem_readsel_t,
+		c_alu_op => cu_opcode_to_alu_t,
+		c_memwrite => cu_memwrite_datamem_writesel_t,
+		c_alusrc => cu_alusrc_to_mux2_sel_t,
+		c_regwrite => cu_regwrite_to_gpr_t
 	);
-		  
+	
+
+Inst_instr_mem: instr_mem PORT MAP(
+		read_addr => pc_addr_t,
+		instr => instr32_t
+	);
+	
 --instantiate and do port map for the gpr.
 Inst_gpr: gpr PORT MAP(
-		clk => ,
-		clr => ,
-		rs => ,
-		rt => ,
-		r_des => ,
-		data_wb => ,
-		reg_write_h => ,
-		data_r1 => ,
-		data_r2 => ,
-		data_r3 => 
+		clk => clk,
+		clr => clr,
+		rs => instr32_t(25 DOWNTO 21),
+		rt => instr32_t(20 DOWNTO 16),
+		r_des => mux1_to_gpr_t,
+		data_wb => mux3_to_gpr_t,
+		reg_write_h => cu_regwrite_to_gpr_t,
+		data_r1 => gpr_data1_out,
+		data_r2 => gpr_data2_out 
 	);
 
-
-
-
---instantiate and do port map for the instr_mem.
-INSTR_MEM : instr_mem port map (			
-			read_addr	=>	pc_addr_t,
-			instr_32		=>	instr_32_t			
-        );
 
 --instantiate and do port map for MUX2		
 Inst_mux2: mux2 PORT MAP(
-		rt => ,
-		imm => ,
-		sel => ,
-		output => 
+		rt => gpr_data2_out,
+		imm => sign_extd_val_t,
+		sel => cu_alusrc_to_mux2_sel_t,
+		output => mux2_to_alu_t
 	);
 		 
 --instantiate and do port map for MUX1
 Inst_mux1: mux1 PORT MAP(
-		rt => ,
-		rd => ,
-		sel => ,
-		out_reg => 
+		rt => instr32_t(20 DOWNTO 16),
+		rd => instr32_t(15 DOWNTO 11),
+		sel => cu_regdst_to_mux1_sel_t,
+		out_reg => mux1_to_gpr_t
 	);		
 
 --instantiate and do port map for MUX3
 Inst_mux3: mux3 PORT MAP(
-		sel => ,
-		alu_result => ,
-		read_data => ,
-		out_data => 
+		sel => cu_memtoreg_to_mux3_sel_t,
+		alu_result => alu_out_t,
+		read_data => data_mem_to_mux3_t,
+		out_data => mux3_to_gpr_t
 	);
 --instantiate and do port map for MUX4
 Inst_mux4: mux4 PORT MAP(
-		sel => ,
-		adder2_result => ,
-		added_pc => ,
-		output => 
+		sel => and_to_mux4_sel_t,
+		adder2_result => adder2_to_mux4_t,
+		added_pc => adder1_pc_plus_4out_t,
+		output => mux4_to_mux5
 	);
 	
 --instantiate and do port map for MUX5
 Inst_mux5: mux5 PORT MAP(
-		mux4_out => ,
-		jmp_addr => ,
-		sel => ,
-		output => 
+		mux4_out => mux4_to_mux5,
+		jmp_addr => jumpaddr_to_mux5_t,
+		sel => cu_jump_to_mux5_sel_t,
+		output => mux5_to_pc_in
 	);
 	
 --instantiate and do port map for data memory
 Inst_data_mem: data_mem PORT MAP(
-		mem_write => ,
-		mem_read => ,
-		address => ,
-		write_data => ,
-		read_data => 
+		mem_write => cu_memwrite_datamem_writesel_t,
+		mem_read => cu_memread_datamem_readsel_t,
+		address => alu_out_t,
+		write_data => gpr_data2_out,
+		read_data => data_mem_to_mux3_t
 	);
 
---instantiate and do port map for shift left
-Inst_shift_left_2: shift_left_2 PORT MAP(
-		instr => ,
-		output => 
+Inst_concatenator: concatenator PORT MAP(
+		addr_28 => instr32_t(25 DOWNTO 0),
+		pc_msb => adder1_pc_plus_4out_t(31 DOWNTO 26),
+		jmp_addr => jumpaddr_to_mux5_t
 	);
+	
+----instantiate and do port map for shift left
+--Inst_shift_left_2: shift_left_2 PORT MAP(
+--		instr => instr32_t(25 DOWNTO 0),
+--		output => slt2_out_t
+--	);
 	
 --instantiate and do port map for adder1
 Inst_adder1: adder1 PORT MAP(
-		in_addr => ,
-		out_addr => 
+		in_addr => pc_addr_t,
+		out_addr => adder1_pc_plus_4out_t
 	);
 
 --instantiate and do port map for adder2	
 Inst_adder2: adder2 PORT MAP(
-		imm_val => ,
-		added_pc => ,
-		output => 
+		imm_val => sign_extd_val_t,
+		added_pc => adder1_pc_plus_4out_t,
+		output => adder2_to_mux4_t
 	);
 --instantiate and do port map for and gate	
 Inst_and_gate: and_gate PORT MAP(
-		branch => ,
-		zero => ,
-		output => 
+		branch => cu_branch_to_and_t,
+		zero => alu_zero_to_and_t,
+		output => and_to_mux4_sel_t
 	);
 	
 --instantiate and do port map for sign extender	
 Inst_sign_extd: sign_extd PORT MAP(
-		imm_val => ,
-		sign_extd_val => 
+		imm_val => instr32_t(15 DOWNTO 0),
+		sign_extd_val => sign_extd_val_t
 	);
 
 --instantiate and do port map for Program Counter		
-PC : pc port map (			
+Inst_pc: pc PORT MAP (			
 			clr			=>	clr, 
 			clk			=>	clk,
-			nextaddr		=>	nextaddr_t,
+			nextaddr		=>	mux5_to_pc_in,
 			pc_addr		=>	pc_addr_t
-        );
-		  
-		  
+   );
+		    
 end Behavioral;
 

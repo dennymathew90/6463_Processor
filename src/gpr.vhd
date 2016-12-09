@@ -39,8 +39,8 @@ entity gpr is
 		data_wb		: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
 		reg_write_h	: IN STD_LOGIC;		
 		data_r1		: OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-		data_r2		: OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-		data_r3		: OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
+		data_r2		: OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
+--		data_r3		: OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
 	 );
 	 
 end gpr;
@@ -55,7 +55,7 @@ begin
 
 	data_r1 <= gpr_mem(CONV_INTEGER(rs));
 	data_r2 <= gpr_mem(CONV_INTEGER(rt));
-	data_r3 <= gpr_mem(CONV_INTEGER(r_des));
+--	data_r3 <= gpr_mem(CONV_INTEGER(r_des));
 	reg_write_temp <= reg_write_h;
 	-- write back data
 	PROCESS(clk)
