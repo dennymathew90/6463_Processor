@@ -52,7 +52,7 @@ begin
 
 WITH sel SELECT
 	out_reg <= rt WHEN '0',
-				  rd WHEN '1';
+				  rd WHEN OTHERS;
 
 end Behavioral;
 

@@ -44,8 +44,8 @@ begin
 
 WITH sel SELECT
 
-	output <= mux4_out WHEN '1',
-				 jmp_addr WHEN '0';
+	output <= mux4_out WHEN '0',
+				 jmp_addr WHEN OTHERS;
 
 end Behavioral;
 

@@ -32,7 +32,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 entity pc is
 	PORT 
 	(
-		clr, clk		: IN STD_LOGIC;
+		clr, pc_clk		: IN STD_LOGIC;
 		nextaddr		: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
 		pc_addr		: OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
 	 );
@@ -49,10 +49,10 @@ architecture Behavioral of pc is
 	----------------------------------------------------------
 
 	-- pc_addr register
-	PROCESS(clr, clk)  BEGIN
+	PROCESS(clr, pc_clk)  BEGIN
 		IF(clr='1') THEN
 			pc_addr <= (OTHERS => '0');
-		ELSIF(clk'EVENT AND clk = '1') THEN  
+		ELSIF(pc_clk'EVENT AND pc_clk = '1') THEN  
 			pc_addr <= pc_addr_tmp;
 		END IF;
 	END PROCESS;

@@ -32,6 +32,7 @@ use IEEE.NUMERIC_STD.ALL;
 entity instr_mem is
 	PORT 
 	(		
+		clr			: IN STD_LOGIC;
 		read_addr	: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
 		instr		: OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
 	 );
@@ -70,14 +71,19 @@ architecture Behavioral of instr_mem is
 --
 --		return Result;
 --	end function;
-
+	
 	
 begin
 
--- Following little-endian byte order:
--- Byte #
--- 3	2	1	0
 
+	PROCESS(clr)
+	BEGIN
+		IF (clr = '1') THEN
+			ram(0) <= "00000100000000010000000000000111";
+			ram(1) <= "00000100000000100000000000001000";
+			ram(2) <= "00000000010000010001100000010000";
+		END IF;
+	END PROCESS;
 	
 	instr <= ram(CONV_INTEGER(read_addr));	
 

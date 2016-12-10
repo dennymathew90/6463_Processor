@@ -66,8 +66,10 @@ process (d_clk)
           end if ;    			
        end if ;
 end process ;
-
-	read_data <= data_ram(to_integer(unsigned(address(31 downto 0)))) when mem_read = '1';
+	WITH mem_read SELECT
+	
+		read_data <= data_ram(to_integer(unsigned(address(31 downto 0)))) when '1',
+							x"FFFFFFFF" WHEN OTHERS;
 	mem_write_t <= mem_write;
 	
 

@@ -33,7 +33,7 @@ entity top_level is
 
 PORT 
 	(
-		clr, clk		: IN STD_LOGIC;		
+		clr, top_clk		: IN STD_LOGIC;		
 		single_step	: IN	STD_LOGIC;  -- run instruction one by one
 		run_whole	: IN	STD_LOGIC;  -- input is valid
 		show_out		: IN	STD_LOGIC;  -- input is valid			
@@ -48,8 +48,9 @@ architecture Behavioral of top_level is
 
 COMPONENT instr_mem
 	PORT(
-		read_addr : IN std_logic_vector(31 downto 0);          
-		instr : OUT std_logic_vector(31 downto 0)
+		clr			: IN STD_LOGIC;
+		read_addr 	: IN std_logic_vector(31 downto 0);          
+		instr 		: OUT std_logic_vector(31 downto 0)
 		);
 	END COMPONENT;
 	
@@ -67,7 +68,6 @@ COMPONENT alu
 COMPONENT control_unit
 PORT(
 		clr : IN std_logic;
-		clk : IN std_logic;
 		opcode : IN std_logic_vector(5 downto 0);
 		func : IN std_logic_vector(5 downto 0);          
 		c_jump : OUT std_logic;
@@ -144,6 +144,7 @@ COMPONENT mux5
 	
 COMPONENT data_mem
 	PORT(
+		d_clk		: IN	STD_LOGIC;
 		mem_write : IN std_logic;
 		mem_read : IN std_logic;
 		address : IN std_logic_vector(31 downto 0);
@@ -211,7 +212,7 @@ COMPONENT out_interface
 	
 component pc
     port(
-         clr, clk		: IN STD_LOGIC;
+         clr, pc_clk		: IN STD_LOGIC;
 			nextaddr		: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
 			pc_addr		: OUT STD_LOGIC_VECTOR(31 DOWNTO 0)		
         );
@@ -335,7 +336,6 @@ Inst_alu: alu PORT MAP(
 --instantiate and do port map for the Control Unit.
 Inst_control_unit: control_unit PORT MAP(
 		clr => clr,
-		clk => clk,
 		opcode => instr32_t(31 DOWNTO 26) ,
 		func => instr32_t(5 DOWNTO 0),
 		c_jump => cu_jump_to_mux5_sel_t,
@@ -351,13 +351,14 @@ Inst_control_unit: control_unit PORT MAP(
 	
 
 Inst_instr_mem: instr_mem PORT MAP(
+		clr => clr,
 		read_addr => pc_addr_t,
 		instr => instr32_t
 	);
 	
 --instantiate and do port map for the gpr.
 Inst_gpr: gpr PORT MAP(
-		clk => clk,
+		clk => top_clk,
 		clr => clr,
 		rs => instr32_t(25 DOWNTO 21),
 		rt => instr32_t(20 DOWNTO 16),
@@ -410,6 +411,7 @@ Inst_mux5: mux5 PORT MAP(
 	
 --instantiate and do port map for data memory
 Inst_data_mem: data_mem PORT MAP(
+		d_clk		=> top_clk,
 		mem_write => cu_memwrite_datamem_writesel_t,
 		mem_read => cu_memread_datamem_readsel_t,
 		address => alu_out_t,
@@ -457,13 +459,13 @@ Inst_sign_extd: sign_extd PORT MAP(
 --instantiate and do port map for Program Counter		
 Inst_pc: pc PORT MAP (			
 			clr			=>	clr, 
-			clk			=>	clk,
+			pc_clk			=>	top_clk,
 			nextaddr		=>	mux5_to_pc_in,
 			pc_addr		=>	pc_addr_t
    );
 	
 Inst_out_interface: out_interface PORT MAP(
-		clk => clk,
+		clk => top_clk,
 		clr => clr,
 		alu_result => alu_out_t,
 		SSEG_CA => TOP_SSEG_CA,

@@ -58,9 +58,12 @@ begin
 --	data_r3 <= gpr_mem(CONV_INTEGER(r_des));
 	reg_write_temp <= reg_write_h;
 	-- write back data
-	PROCESS(clk)
+	PROCESS(clk, clr)
 	BEGIN
-		IF (rising_edge(clk)) THEN
+		IF (clr = '1') THEN
+			gpr_mem(1) <= x"00000001";
+			gpr_mem(0) <= x"00000002";
+		ELSIF(rising_edge(clk)) THEN
 			IF(reg_write_temp = '1') THEN
 				gpr_mem(CONV_INTEGER(r_des)) <= data_wb;
 			END IF;

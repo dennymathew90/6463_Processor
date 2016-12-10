@@ -42,7 +42,7 @@ begin
 
 WITH imm_val(15) SELECT
 	sign_extd_val <= x"0000" & imm_val WHEN '0',
-						  x"FFFF" & imm_val WHEN '1';
+						  x"FFFF" & imm_val WHEN OTHERS;
 
 end Behavioral;
 

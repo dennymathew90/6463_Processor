@@ -45,7 +45,7 @@ begin
 WITH sel SELECT
 
 	output <= adder2_result WHEN '1',
-				 added_pc WHEN '0';
+				 added_pc WHEN OTHERS;
 
 end Behavioral;
 

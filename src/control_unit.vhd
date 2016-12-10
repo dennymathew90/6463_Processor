@@ -37,7 +37,7 @@ use work.constants_pkg.all;
 entity control_unit is
 	PORT 
 	(
-		clr, clk			: IN STD_LOGIC;
+		clr				: IN STD_LOGIC;
 		opcode			: IN STD_LOGIC_VECTOR(5 DOWNTO 0);	
 		func				: IN STD_LOGIC_VECTOR(5 DOWNTO 0);	
 		c_jump			: OUT STD_LOGIC;
@@ -58,13 +58,21 @@ architecture Behavioral of control_unit is
 begin
 	
 	--state processing : button logic
-	PROCESS(opcode, clr)
+	PROCESS(opcode)
 	BEGIN
-		IF(clr='1') THEN
-			-- TODO Find a way to init all the outputs of the control unit
-			NULL;
-			
-		ELSE			
+--		IF(clr='1') THEN
+--			-- TODO Find a way to init all the outputs of the control unit
+--			c_regdst			<= DISABLE;	
+--			c_jump			<= DISABLE;
+--			c_branch			<= DISABLE;
+--			c_memtoreg		<= DISABLE;
+--			c_memread		<= DISABLE;
+--			c_alu_op			<= ALU_NDEF;
+--			c_memwrite		<= DISABLE;
+--			c_alusrc			<= DISABLE;
+--			c_regwrite		<= DISABLE;
+--			
+--		ELSIF (clr)			
 			c_regdst			<= DISABLE;	
 			c_jump			<= DISABLE;
 			c_branch			<= DISABLE;
@@ -158,7 +166,7 @@ begin
 				WHEN OTHERS =>
 					c_alu_op <= ALU_NDEF; -- TODO
 			END CASE;
-		END IF;
+--		END IF;
 		
 	END PROCESS;
 			

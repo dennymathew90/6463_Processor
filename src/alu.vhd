@@ -254,8 +254,12 @@ begin
 				zero_out <= '0';
 			ELSE
 				zero_out <= '1';
-			END IF;	
+			END IF;
+		ELSE
+			output <= x"FFFFFFFF";
+			zero_out <= '0';
 		END IF;
+		
 		
 	END PROCESS;
 	

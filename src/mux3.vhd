@@ -49,7 +49,7 @@ begin
 WITH sel SELECT
 
 	out_data <= alu_result WHEN '0',
-					read_data  WHEN '1';
+					read_data  WHEN OTHERS;
 
 end Behavioral;
 

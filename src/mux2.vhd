@@ -44,7 +44,7 @@ begin
 
 WITH sel SELECT 
 	output <= rt WHEN '0',
-				 imm WHEN '1';
+				 imm WHEN OTHERS;
 
 end Behavioral;
 
