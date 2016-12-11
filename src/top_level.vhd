@@ -144,7 +144,7 @@ COMPONENT mux5
 	
 COMPONENT data_mem
 	PORT(
-		d_clk		: IN	STD_LOGIC;
+		d_clk, clr		: IN	STD_LOGIC;
 		mem_write : IN std_logic;
 		mem_read : IN std_logic;
 		address : IN std_logic_vector(31 downto 0);
@@ -412,6 +412,7 @@ Inst_mux5: mux5 PORT MAP(
 --instantiate and do port map for data memory
 Inst_data_mem: data_mem PORT MAP(
 		d_clk		=> top_clk,
+		clr 		=> clr,
 		mem_write => cu_memwrite_datamem_writesel_t,
 		mem_read => cu_memread_datamem_readsel_t,
 		address => alu_out_t,

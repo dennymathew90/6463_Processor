@@ -70,7 +70,7 @@ SIGNAL temp : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS=> '0');
 
 begin
 				 
-	PROCESS(a, b)
+	PROCESS(a, b, op_select)
 	BEGIN 
 		output <= x"FFFFFFFF";
 		zero_out <= '0';			--TODO check these values
@@ -249,14 +249,14 @@ begin
 				zero_out <= '0';
 			END IF;
 	   -- branch if not equal
-		ELSIF (op_select = ALU_BLT) THEN
+		ELSIF (op_select = ALU_BNE) THEN
 			IF(a = b) THEN
 				zero_out <= '0';
 			ELSE
 				zero_out <= '1';
 			END IF;
 		ELSE
-			output <= x"FFFFFFFF";
+			output <= x"00000000";
 			zero_out <= '0';
 		END IF;
 		

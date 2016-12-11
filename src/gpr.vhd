@@ -61,8 +61,7 @@ begin
 	PROCESS(clk, clr)
 	BEGIN
 		IF (clr = '1') THEN
-			gpr_mem(1) <= x"00000001";
-			gpr_mem(0) <= x"00000002";
+			gpr_mem(0) <= x"00000000";
 		ELSIF(rising_edge(clk)) THEN
 			IF(reg_write_temp = '1') THEN
 				gpr_mem(CONV_INTEGER(r_des)) <= data_wb;

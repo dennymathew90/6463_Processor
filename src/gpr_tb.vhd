@@ -96,11 +96,11 @@ BEGIN
 		clk <= '1';
 		wait for clk_period/2;
    end process;
- 
+                
 
    -- Stimulus process
    stim_proc: process
-   begin		
+   begin		  
 		wait for 5ns;
 		rs <= "00001";
 		rt <= "00010";
@@ -113,7 +113,7 @@ BEGIN
 		r_des <= "00100";
 		data_wb <= x"FFFFFFFF";
 		reg_write_h <= '0';
-      wait;
+      wait;    
    end process;
 
 END;

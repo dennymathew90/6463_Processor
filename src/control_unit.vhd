@@ -87,7 +87,7 @@ begin
 					c_regwrite	<= ENABLE;
 					c_regdst		<= ENABLE;
 					
-					if (func = FUNC_ADD(5 downto 0)) THEN
+					IF (func = FUNC_ADD(5 downto 0)) THEN
 						c_alu_op	<= ALU_ADD;
 					ELSIF (func = FUNC_SUB(5 downto 0)) THEN
 						c_alu_op	<= ALU_SUB;
