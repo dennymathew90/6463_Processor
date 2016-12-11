@@ -43,7 +43,7 @@ end data_mem;
 architecture Behavioral of data_mem is
 
 	CONSTANT DATA_BITS : Integer := 32;			-- no of bits per word
-	CONSTANT DEPTH     : Integer := 2056;		
+	CONSTANT DEPTH     : Integer := 512;		
 	
 	TYPE    ram_t   IS ARRAY(0 TO DEPTH - 1) OF STD_LOGIC_VECTOR(DATA_BITS - 1 DOWNTO 0);	
 	
@@ -58,18 +58,24 @@ begin
 process (d_clk, clr)
   begin
 		if (clr='1') then
-			data_ram(3) <= x"00000007";
-		
+			data_ram(4) <= x"00000040";
+			data_ram(5) <= x"00000010";
+			data_ram(6) <= x"00000004";
+			data_ram(7) <= x"0000001A";
+			data_ram(8) <= x"B7E15163"; --P
+			data_ram(9) <= x"9E3779B9"; --Q 
+			data_ram(42) <= x"0000000C";
+			
       elsif (rising_edge(d_clk)) then
 			
          if (mem_write_t='1') then
-			   data_ram(to_integer (unsigned(address(31 downto 0)))) <= write_data_t;
+			   data_ram(conv_integer (address(31 downto 0))) <= write_data_t;
           end if ;    			
        end if ;
 end process ;
 	WITH mem_read SELECT
-	
-		read_data <= data_ram(to_integer(unsigned(address(31 downto 0)))) when '1',
+			
+		read_data <= data_ram(conv_integer(x"00000" & "000" & address(8 downto 0))) when '1',
 							x"00000000" WHEN OTHERS;
 	mem_write_t <= mem_write;
 	write_data_t <= write_data;

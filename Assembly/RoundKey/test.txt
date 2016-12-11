@@ -1,0 +1,56 @@
+addi R3, R0, 4           
+addi R1, R0, 1      
+subi R3, R3, 1 
+lw R2, 0(R3)	     
+sw R2, 10(R3)   
+bne R3, R0, -4
+lw R2, 8(R0)		
+sw R2, 14(R0)		
+addi R1, R1, 1		
+lw R4, 9(R0)
+addi R7, R0, 26
+add R2, R2, R4	
+sw R2, 14(R1)
+addi R1, R1, 1
+bne R1, R7, -4
+addi R1, R0, 0		
+addi R2, R1, 0	
+addi R3, R1, 0	
+addi R4, R1, 0	
+addi R5, R1, 0
+addi R8, R0, 4
+addi R9, R0, 77
+lw R6, 14(R1)	
+add R3, R3, R4	
+add R3, R3, R6	
+sll R3, R3, 3	
+sw R3, 14(R1)	
+lw R6, 10(R2)
+add R4, R3, R4	
+add R5, R4, R6	
+sw R5, 48(R0)
+sw R4, 49(R0)
+lw R10, 47(R0)	
+lw R11, 48(R0)	
+lw R12, 49(R0)	
+and R13, R12, R10
+sub R14, R13, 32
+lw R15, 48(R0)	
+sll R11, R11, 1
+subi R13, R13, 1
+bne R13, R0, -3
+srl R15, R15, 1
+addi R14, R14, 1
+bne R14, R0, -3
+or R11, R11, R15
+sw R11, 10(R2)
+addi R1, R1, 1
+addi R2, R2, 1	
+bne R1, R7, 1
+addi R1, R0, 0	
+bne R2, R8, 1
+addi R2, R0, 0
+addi R5, R5, 1
+bne R5, R9, -32
+
+
