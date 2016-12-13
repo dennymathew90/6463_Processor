@@ -92,7 +92,7 @@ signal clk_cntr_reg : std_logic_vector (4 downto 0) := (others=>'0');
 begin
 
 
-display_config_process : process (clr, is_halt)
+display_config_process : process ( is_halt)
 begin
 	IF (clr = '1') THEN
 		null;
@@ -165,16 +165,16 @@ PROCESS(showing_state)
 				indicator <= "0000";
 				
 			WHEN ST_ENC_LSB =>  
-				to_read_addr <= x"000000A0";
+				to_read_addr <= x"0000002B";
 				indicator <= "0001";
 			WHEN ST_ENC_MSB =>  
-				to_read_addr <= x"000000A1";
+				to_read_addr <= x"0000002C";
 				indicator <= "0011";
 			WHEN ST_DEC_LSB =>  
-				to_read_addr <= x"000000A2";
+				to_read_addr <= x"0000002D";	--ci@her
 				indicator <= "0111";
 			WHEN ST_DEC_MSB =>  
-				to_read_addr <= x"000000A3";	
+				to_read_addr <= x"0000002E";	
 				indicator <= "1111";				
 	END CASE;
 END PROCESS;
