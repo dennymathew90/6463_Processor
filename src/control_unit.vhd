@@ -48,6 +48,7 @@ entity control_unit is
 		c_alu_op			: OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
 		c_memwrite		: OUT STD_LOGIC;
 		c_alusrc			: OUT STD_LOGIC;
+		c_halt			: OUT STD_LOGIC;
 		c_regwrite		: OUT STD_LOGIC			
 	 );
 	 
@@ -58,21 +59,10 @@ architecture Behavioral of control_unit is
 begin
 	
 	--state processing : button logic
-	PROCESS(opcode)
+	PROCESS(opcode, clr)
 	BEGIN
---		IF(clr='1') THEN
---			-- TODO Find a way to init all the outputs of the control unit
---			c_regdst			<= DISABLE;	
---			c_jump			<= DISABLE;
---			c_branch			<= DISABLE;
---			c_memtoreg		<= DISABLE;
---			c_memread		<= DISABLE;
---			c_alu_op			<= ALU_NDEF;
---			c_memwrite		<= DISABLE;
---			c_alusrc			<= DISABLE;
---			c_regwrite		<= DISABLE;
---			
---		ELSIF (clr)			
+		IF(clr='1') THEN
+			-- TODO Find a way to init all the outputs of the control unit
 			c_regdst			<= DISABLE;	
 			c_jump			<= DISABLE;
 			c_branch			<= DISABLE;
@@ -82,6 +72,19 @@ begin
 			c_memwrite		<= DISABLE;
 			c_alusrc			<= DISABLE;
 			c_regwrite		<= DISABLE;
+			c_halt			<= ENABLE;
+			
+		ELSE			
+			c_regdst			<= DISABLE;	
+			c_jump			<= DISABLE;
+			c_branch			<= DISABLE;
+			c_memtoreg		<= DISABLE;
+			c_memread		<= DISABLE;
+			c_alu_op			<= ALU_NDEF;
+			c_memwrite		<= DISABLE;
+			c_alusrc			<= DISABLE;
+			c_regwrite		<= DISABLE;
+			c_halt			<= ENABLE;	
 			CASE opcode IS
 				WHEN OPC_ADD_SUB_AND_OR_NOR(5 downto 0) =>  
 					c_regwrite	<= ENABLE;
@@ -162,11 +165,12 @@ begin
 					c_branch		<= ENABLE;
 					c_alu_op 	<= ALU_NDEF;
 				WHEN OPC_HAL(5 downto 0) =>	
-					null;	-- TODO
+					c_halt		<= DISABLE;	
+					c_memread	<= ENABLE;
 				WHEN OTHERS =>
 					c_alu_op <= ALU_NDEF; -- TODO
 			END CASE;
---		END IF;
+		END IF;
 		
 	END PROCESS;
 			

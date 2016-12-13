@@ -34,6 +34,7 @@ entity pc is
 	(
 		clr, pc_clk		: IN STD_LOGIC;
 		nextaddr		: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+		pc_indicator		: OUT	STD_LOGIC_VECTOR (4 downto 0);  -- display pc output
 		pc_addr		: OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
 	 );
 end pc;
@@ -54,6 +55,7 @@ architecture Behavioral of pc is
 			pc_addr <= (OTHERS => '0');
 		ELSIF(pc_clk'EVENT AND pc_clk = '1') THEN  
 			pc_addr <= pc_addr_tmp;
+			pc_indicator <= pc_addr_tmp(4 DOWNTO 0);
 		END IF;
 	END PROCESS;
 

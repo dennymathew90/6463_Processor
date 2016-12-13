@@ -54,8 +54,10 @@ entity alu is
 
 	PORT 
 	(
+		clr			: IN STD_LOGIC;
 		a 				: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
 		b 				: IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+		pc_static 	: IN STD_LOGIC;
 		op_select 	: IN STD_LOGIC_VECTOR(3 DOWNTO 0);
 		output 		: OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
 		zero_out 	: OUT STD_LOGIC
@@ -70,9 +72,12 @@ SIGNAL temp : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS=> '0');
 
 begin
 				 
-	PROCESS(a, b, op_select)
-	BEGIN 
-		output <= x"FFFFFFFF";
+	PROCESS(a, b, pc_static, clr)
+	BEGIN
+		IF ( pc_static = '0') THEN
+			null;
+		ELSE
+		output <= x"00000000";
 		zero_out <= '0';			--TODO check these values
 		-- add
 		IF (op_select = ALU_ADD) THEN
@@ -260,7 +265,7 @@ begin
 			zero_out <= '0';
 		END IF;
 		
-		
+	END IF;	
 	END PROCESS;
 	
 

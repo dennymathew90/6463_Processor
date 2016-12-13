@@ -2,9 +2,9 @@
 -- Company: 
 -- Engineer: 
 -- 
--- Create Date:    14:11:43 12/01/2016 
+-- Create Date:    17:29:50 12/11/2016 
 -- Design Name: 
--- Module Name:    adder - Behavioral 
+-- Module Name:    mux6 - Behavioral 
 -- Project Name: 
 -- Target Devices: 
 -- Tool versions: 
@@ -19,7 +19,7 @@
 ----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.STD_LOGIC_unsigned.ALL;
+
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
 --use IEEE.NUMERIC_STD.ALL;
@@ -29,19 +29,30 @@ use IEEE.STD_LOGIC_unsigned.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity adder1 is
-    Port ( 
-			  in_addr : in  STD_LOGIC_VECTOR (31 downto 0);
-			  increment : in  STD_LOGIC;
-           out_addr : out STD_LOGIC_VECTOR (31 downto 0)
+entity mux6 is
+	 Port ( 
+				sel 				:	IN		STD_LOGIC;
+				alu_result  	:	IN		STD_LOGIC_VECTOR (31 DOWNTO 0);
+            display_result :  IN		STD_LOGIC_VECTOR (31 DOWNTO 0);
+            out_address		:	OUT	STD_LOGIC_VECTOR (31 DOWNTO 0)
 			);
-end adder1;
+end mux6;
 
-architecture Behavioral of adder1 is
+
+
+----------------------------------------------------------
+------        alu_result(0) or display_result(1)   -------
+----------------------------------------------------------
+
+
+architecture Behavioral of mux6 is
 
 begin
+	WITH sel SELECT
 
-out_addr <= in_addr + increment;
+	out_address <= display_result WHEN '1',
+					  alu_result WHEN OTHERS;
 
 end Behavioral;
+
 

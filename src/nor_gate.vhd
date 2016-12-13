@@ -2,9 +2,9 @@
 -- Company: 
 -- Engineer: 
 -- 
--- Create Date:    14:11:43 12/01/2016 
+-- Create Date:    17:33:25 12/11/2016 
 -- Design Name: 
--- Module Name:    adder - Behavioral 
+-- Module Name:    nor_gate - Behavioral 
 -- Project Name: 
 -- Target Devices: 
 -- Tool versions: 
@@ -19,7 +19,7 @@
 ----------------------------------------------------------------------------------
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.STD_LOGIC_unsigned.ALL;
+
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
 --use IEEE.NUMERIC_STD.ALL;
@@ -29,19 +29,19 @@ use IEEE.STD_LOGIC_unsigned.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity adder1 is
-    Port ( 
-			  in_addr : in  STD_LOGIC_VECTOR (31 downto 0);
-			  increment : in  STD_LOGIC;
-           out_addr : out STD_LOGIC_VECTOR (31 downto 0)
-			);
-end adder1;
+entity nor_gate is
+	 Port ( 
+			  control_i 		: in  	STD_LOGIC;
+           inputif_i 		: in  	STD_LOGIC;
+           output 			: out  	STD_LOGIC
+			 );
+end nor_gate;
 
-architecture Behavioral of adder1 is
+architecture Behavioral of nor_gate is
 
 begin
 
-out_addr <= in_addr + increment;
-
+	output <= control_i and inputif_i;
+	
 end Behavioral;
 
