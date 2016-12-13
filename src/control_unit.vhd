@@ -59,7 +59,7 @@ architecture Behavioral of control_unit is
 begin
 	
 	--state processing : button logic
-	PROCESS(opcode, clr)
+	PROCESS(opcode, func, clr)
 	BEGIN
 		IF(clr='1') THEN
 			-- TODO Find a way to init all the outputs of the control unit
