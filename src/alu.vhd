@@ -70,13 +70,16 @@ architecture behavioral of alu is
 --TODO: if the op_select is invalid, output a high res. For now it is just 0's
 SIGNAL temp : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS=> '0');
 
+
 begin
 				 
-	PROCESS(a, b, pc_static, clr)
+
+	PROCESS(a, b, op_select, pc_static, clr)
 	BEGIN
 		IF ( pc_static = '0') THEN
 			null;
 		ELSE
+
 		output <= x"00000000";
 		zero_out <= '0';			--TODO check these values
 		-- add
@@ -85,7 +88,7 @@ begin
 			zero_out <= '0';
 		-- sub	
 		ELSIF (op_select = ALU_SUB) THEN
-			output <= a - b;
+			output <= (a - b) ;
 			zero_out <= '0';
 		ELSIF (op_select = ALU_AND) THEN
 			output <= a and b;
@@ -264,10 +267,12 @@ begin
 			output <= x"00000000";
 			zero_out <= '0';
 		END IF;
+
 		
 	END IF;	
+
 	END PROCESS;
-	
+
 
 end behavioral;
 

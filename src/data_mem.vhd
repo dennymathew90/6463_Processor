@@ -53,6 +53,7 @@ architecture Behavioral of data_mem is
 	SIGNAL mem_write_t 	:  STD_LOGIC;  
 	SIGNAL write_data_t 	:  STD_LOGIC_VECTOR(31 DOWNTO 0);  
 	
+	
 begin
 	
 process (d_clk, clr)

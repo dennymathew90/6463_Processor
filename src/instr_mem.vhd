@@ -43,6 +43,7 @@ architecture Behavioral of instr_mem is
 	constant DEPTH     : Integer := 256;		-- no of lines TODO change depth to 2 power 32
 --	constant FILENAME  : String(1 to 19) := "inputfilename.hex";
 	
+	
 	subtype word_t  is std_logic_vector(DATA_BITS - 1 downto 0);
 	type    ram_t   is array(0 to DEPTH - 1) of word_t;
 --	signal ram    : ram_t    := ReadAssemblyFile(FILENAME);

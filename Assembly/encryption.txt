@@ -1,0 +1,59 @@
+addi R1, R0, 0
+lw R2, 14(R1)
+lw R3, 43(R1)		
+add	R3, R2, R3
+addi R1, R1, 1
+lw R4, 14(R1)
+lw R5, 43(R1)		
+add	R5, R4, R5
+addi R17, R0, 13
+encryptloop:
+addi R8, R1, 0 
+and	R6, R3, R5		
+nor	R7, R3, R5
+nor	R7, R6, R7		
+sw	R7, 48(R0)
+sw	R5, 49(R0)
+lw	R10, 47(R0)	
+lw	R11, 48(R0)	
+lw	R12, 49(R0)	
+and	R13, R12, R10
+subi R14, R13, 32
+lw R15, 48(R0)	
+shl	R11, R11, 1
+subi R13, R13,1
+bne	R13, R0, -3 
+shr	R15, R15, 1
+addi R14, R14, 1
+bne	R14, R0, -3
+or	R11, R11, R15
+add	R8, R8, R8
+lw R9, 14(R8)
+add	R3, R11, R9	
+and	R6, R3, R5		
+nor	R7, R3, R5
+nor	R7, R6, R7
+sw R7, 48(R0)
+sw R3, 49(R0)
+lw R10, 47(R0)	
+lw R11, 48(R0)	
+lw R12, 49(R0)
+and	R13, R12, R10
+subi R14, R13, 32
+lw	R15, 48(R0)	
+shl	R11, R11, 1
+subi R13, R13, 1
+bne	R13, R0, -3
+srl	R15, R15, 1
+addi R14, R14, 1
+bne	R14, R0, -3
+or R11, R11, R15
+addi R8, R8, 1
+lw R9, 14(R8)
+add	R5, R5, r9	
+addi R1, R1, 1
+bne	R1, R17, -46
+addi R1, R0, 0
+sw	R3, 45(R1)
+addi R1, R1, 1
+sw	R5, 45(R1)
